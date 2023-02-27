@@ -4,3 +4,5 @@ dist
 env
 __pycache__
 .pytest_cache
+alembic.ini
+*.sqlite
