@@ -12,14 +12,15 @@ fake_users_db = {
 
 
 class User(BaseModel):
-    username: str
-    email: str | None = None
-    full_name: str | None = None
+    email: str
+    first_name: str | None = None
+    last_name: str | None = None
     disabled: bool | None = None
 
 
 class UserInDB(User):
     hashed_password: str
+    email_verified: bool = False
 
 
 class UserIn(User):
