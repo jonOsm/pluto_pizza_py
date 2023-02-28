@@ -19,7 +19,8 @@ class User(Base):
     email_verified: Mapped[bool] = mapped_column(default=False)
     first_name: Mapped[str]
     last_name: Mapped[str]
-    password_hash: Mapped[str]
+    disabled: Mapped[bool] = mapped_column(default=False)
+    hashed_password: Mapped[str]
 
     # addresses: Mapped[list["Address"]] = relationship(back_populates="user")
     # orders: Mapped[list["Order"]] = relationship(back_populates="user")

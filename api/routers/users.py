@@ -19,11 +19,11 @@ class Product(BaseModel):
 router = APIRouter(prefix="/users")
 
 
-# create user
-@router.post("/", response_model=UserOut)
-async def create_user(user: UserIn) -> User:
-    # return specified user
-    pass
+# # create user
+# @router.post("/", response_model=UserOut)
+# async def create_user(user: UserIn) -> User:
+#     # return specified user
+#     pass
 
 
 # read user?

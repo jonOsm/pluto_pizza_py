@@ -1,16 +1,23 @@
+from dotenv import load_dotenv
+
+load_dotenv()
+from os import getenv
 from datetime import datetime, timedelta
+
 from jose import JWTError, jwt
 from fastapi import APIRouter, Body, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
+from sqlalchemy.orm import Session
 
 from schema.token import Token, TokenData
 from schema.users import User, UserIn, UserInDB
+from db.setup import get_db
 from .db_utils.users import insert_user
 
-SECRET_KEY = "dded194e52e310765e113c255262002092fc29369c1aa94aa4e4bac19c024b8a"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = getenv("SECRET_KEY")
+ALGORITHM = getenv("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 fake_users_db = {
     "johndoe@example.com": {
@@ -77,7 +84,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = TokenData(email=email)
     except JWTError:
         raise credentials_exception
-    user = get_user(fake_users_db, email=token_data.username)
+    user = get_user(fake_users_db, email=token_data.email)
     if user is None:
         raise credentials_exception
     return user
@@ -106,15 +113,14 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.post("/register", response_model=Token)
-async def register_user(new_user: UserIn = Body()):
-    # hash password
+@router.post(
+    "/register",
+    response_model=Token,
+)
+def register_user(new_user: UserIn = Body(), db: Session = Depends(get_db)):
     hashed_password = get_password_hash(new_user.password)
-    user = UserInDB(**new_user, hashed_password=hashed_password)
-    # attempt to insert into db
-    user = insert_user(user)
-
-    # if successful, generate jwt and return to user
+    user = UserInDB(**new_user.dict(), hashed_password=hashed_password)
+    insert_user(db, user)
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         {"sub": user.email}, expires_delta=access_token_expires

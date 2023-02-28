@@ -1,18 +1,28 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
+import configparser
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.sqlite"
-# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
+config = configparser.ConfigParser()
+config.read("./alembic.ini")
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
+    config["alembic"]["sqlalchemy.url"],
     connect_args={
         "check_same_thread": False,
     },
 )
+
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 class Base(DeclarativeBase):
     pass
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

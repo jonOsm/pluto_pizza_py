@@ -1,13 +1,9 @@
 from pydantic import BaseModel
 
-fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
-        "disabled": False,
-    }
+example_schema = {
+    "email": "foo@example.com",
+    "first_name": "foo",
+    "last_name": "bar",
 }
 
 
@@ -17,14 +13,20 @@ class User(BaseModel):
     last_name: str | None = None
     disabled: bool | None = None
 
+    class Config:
+        schema_extra = {"example": example_schema}
+
 
 class UserInDB(User):
     hashed_password: str
-    email_verified: bool = False
+    email_verified: bool | None
 
 
 class UserIn(User):
     password: str
+
+    class Config:
+        schema_extra = {"example": {**example_schema, "password": "secret"}}
 
 
 class UserOut(User):
