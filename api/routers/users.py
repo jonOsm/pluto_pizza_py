@@ -1,6 +1,10 @@
 from enum import Enum
+
 from fastapi import APIRouter
+from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
+
+from schema.users import User, UserIn, UserOut
 
 
 class UserFilters(str, Enum):
@@ -8,13 +12,34 @@ class UserFilters(str, Enum):
     basic = "basic"
 
 
-class BaseUser(BaseModel):
+class Product(BaseModel):
     name: str
 
 
 router = APIRouter(prefix="/users")
 
 
-@router.get("/filter/{user_filter}")
-async def get_users(user_filter: UserFilters | None = None) -> list[BaseUser]:
-    return [BaseUser(name="Foo"), BaseUser(name="Bar")]
+# create user
+@router.post("/", response_model=UserOut)
+async def create_user(user: UserIn) -> User:
+    # return specified user
+    pass
+
+
+# read user?
+
+
+@router.get("/{id}")
+async def get_user(id: int) -> list[Product]:
+    # return specified user
+    pass
+
+
+@router.get("/")
+async def get_all_users() -> list[Product]:
+    # return all users
+    pass
+
+
+# update user
+# delete user

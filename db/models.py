@@ -10,9 +10,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 #     "pk": "pk_%(table_name)s",
 # }
 
-# db = SQLAlchemy(metadata=MetaData(naming_convention=convention))
-# migrate = Migrate(None, db, render_as_batch=True)
-
 
 class User(Base):
     __tablename__ = "users"
