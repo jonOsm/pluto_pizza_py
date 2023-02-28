@@ -105,6 +105,12 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 
 @router.post("/register", response_model=Token)
 async def register_user(new_user: UserIn):
+    # hash password
+    hashed_password = get_password_hash(new_user.password)
+    user = UserIn(**new_user, hashed_password=hashed_password)
+    # attempt to insert into db
+    # if successful, generate jwt and return to user
+    # otherwise
     pass
 
 
