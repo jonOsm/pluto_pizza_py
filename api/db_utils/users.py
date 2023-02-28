@@ -1,8 +1,10 @@
 from fastapi import HTTPException, status
-from schema.users import UserInDB
+from sqlalchemy import select
 from sqlalchemy.orm import Session
-from db.models import User
 from sqlalchemy.exc import IntegrityError
+
+from schema.users import UserInDB
+from db.models import User
 
 
 def insert_user(db: Session, user_in: UserInDB):
@@ -15,3 +17,8 @@ def insert_user(db: Session, user_in: UserInDB):
         db.commit()
     except IntegrityError as e:
         raise integrity_exception
+
+
+def get_user_by_email(db: Session, email: str):
+    query = select(User).where(User.email == email)
+    return db.scalar(query)

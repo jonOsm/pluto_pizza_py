@@ -7,27 +7,28 @@ example_schema = {
 }
 
 
-class User(BaseModel):
+class BaseUser(BaseModel):
     email: str
     first_name: str | None = None
     last_name: str | None = None
     disabled: bool | None = None
 
+
+class User(BaseUser):
+    id: str
+
     class Config:
         schema_extra = {"example": example_schema}
+        orm_mode = True
 
 
-class UserInDB(User):
+class UserInDB(BaseUser):
     hashed_password: str
     email_verified: bool | None
 
 
-class UserIn(User):
+class UserIn(BaseUser):
     password: str
 
     class Config:
         schema_extra = {"example": {**example_schema, "password": "secret"}}
-
-
-class UserOut(User):
-    pass

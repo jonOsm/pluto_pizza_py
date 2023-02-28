@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 
-from schema.users import User, UserIn, UserOut
+from schema.users import User, UserIn
 
 
 class UserFilters(str, Enum):
