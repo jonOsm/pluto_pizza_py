@@ -15,7 +15,7 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    email: Mapped[str]
+    email: Mapped[str] = mapped_column(unique=True)
     email_verified: Mapped[bool] = mapped_column(default=False)
     first_name: Mapped[str]
     last_name: Mapped[str]
