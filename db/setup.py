@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.orm import sessionmaker, DeclarativeBase, scoped_session
 import configparser
 
 config = configparser.ConfigParser()
@@ -26,3 +26,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def get_scoped_session():
+    return scoped_session(SessionLocal)
