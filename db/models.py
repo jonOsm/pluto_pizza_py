@@ -1,5 +1,5 @@
 from db.setup import Base
-from sqlalchemy import String
+from sqlalchemy import String, DateTime, func, sql
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 # Necessary for sqlite to handle altering constraints: https://stackoverflow.com/a/62651160
@@ -17,10 +17,10 @@ class User(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(unique=True)
-    email_verified: Mapped[bool] = mapped_column(default=False)
+    email_verified: Mapped[bool] = mapped_column(server_default=sql.false())
     first_name: Mapped[str]
     last_name: Mapped[str]
-    disabled: Mapped[bool] = mapped_column(default=False)
+    disabled: Mapped[bool] = mapped_column(server_default=sql.false())
     hashed_password: Mapped[str]
 
     # addresses: Mapped[list["Address"]] = relationship(back_populates="user")
