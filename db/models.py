@@ -1,4 +1,5 @@
 from db.setup import Base
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 # Necessary for sqlite to handle altering constraints: https://stackoverflow.com/a/62651160
@@ -25,6 +26,17 @@ class User(Base):
     # addresses: Mapped[list["Address"]] = relationship(back_populates="user")
     # orders: Mapped[list["Order"]] = relationship(back_populates="user")
 
+class Product(Base):
+    __tablename__ = "products"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    base_price: Mapped[float]
+    base_size: Mapped[str]
+    is_draft: Mapped[bool] = mapped_column(default=True)
+    stock: Mapped[int] = mapped_column(default=0)
+    sku: Mapped[str] = mapped_column(String(50))
+    image_url: Mapped[str]
 
 # class Address(db.Model):
 #     __tablename__ = "address"
