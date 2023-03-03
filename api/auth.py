@@ -119,18 +119,19 @@ async def login_for_access_token(
 
 @router.post(
     "/register",
-    response_model=Token,
+    response_model=User,
 )
 def register_user(new_user: UserIn = Body(), db: Session = Depends(get_db)):
     hashed_password = get_password_hash(new_user.password)
-    user = UserInDB(**new_user.dict(), hashed_password=hashed_password)
-    insert_user(db, user)
+    user = insert_user(db, UserInDB(**new_user.dict(), hashed_password=hashed_password))
+    
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
+    user.access_token = create_access_token(
         {"sub": user.email}, expires_delta=access_token_expires
     )
+    user.token_type = "bearer"
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return user
 
 
 @router.get("/users/me/", response_model=User)

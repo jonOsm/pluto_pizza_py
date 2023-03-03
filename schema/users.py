@@ -16,6 +16,8 @@ class BaseUser(BaseModel):
 
 class User(BaseUser):
     id: str
+    access_token: str | None
+    token_type: str | None
 
     class Config:
         schema_extra = {"example": example_schema}
