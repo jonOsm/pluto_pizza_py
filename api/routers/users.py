@@ -29,16 +29,16 @@ router = APIRouter(prefix="/users")
 # read user?
 
 
-@router.get("/{id}")
-async def get_user(id: int) -> list[Product]:
-    # return specified user
-    pass
+# @router.get("/{id}")
+# async def get_user(id: int) -> list[Product]:
+#     # return specified user
+#     pass
 
 
-@router.get("/")
-async def get_all_users() -> list[Product]:
-    # return all users
-    pass
+# @router.get("/")
+# async def get_all_users() -> list[Product]:
+#     # return all users
+#     pass
 
 
 # update user
