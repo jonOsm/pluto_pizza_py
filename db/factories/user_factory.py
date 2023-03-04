@@ -24,4 +24,4 @@ class UserFactory(SQLAlchemyModelFactory):
     last_name = Faker('last_name')
     disabled = Faker('boolean', 
                      chance_of_getting_true=5)
-    hashed_password = "$2b$12$lyS1PwcbotaTYuBaNyl/Wes41F756lF.qndgFd9BpaL/7FB6QMFbq"
+    hashed_password = "$2b$12$RjCfW4z96wrp2isyFMiTweQL/H/QaaKY8FjrH9/1F/HOiH6y4s4Qy"
