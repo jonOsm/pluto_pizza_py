@@ -11,4 +11,4 @@ class Product(BaseModel):
     image_url: str
 
     class Config:
-        orm_mode: True
+        orm_mode = True
