@@ -12,7 +12,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 # }
 
 
-class User(Base):
+class UserModel(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -26,7 +26,7 @@ class User(Base):
     # addresses: Mapped[list["Address"]] = relationship(back_populates="user")
     # orders: Mapped[list["Order"]] = relationship(back_populates="user")
 
-class Product(Base):
+class ProductModel(Base):
     __tablename__ = "products"
 
     id: Mapped[int] = mapped_column(primary_key=True)

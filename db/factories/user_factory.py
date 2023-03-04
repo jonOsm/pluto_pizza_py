@@ -3,12 +3,12 @@ from factory import Faker
 from factory.alchemy import SQLAlchemyModelFactory
 import random
 from db.setup import get_scoped_session 
-from db.models import User
+from db.models import UserModel
 
 
 class UserFactory(SQLAlchemyModelFactory):
     class Meta:
-        model = User
+        model = UserModel
         sqlalchemy_session = get_scoped_session() 
         sqlalchemy_session_persistence = "commit"
 

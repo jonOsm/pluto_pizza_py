@@ -1,12 +1,12 @@
 from factory import Faker, LazyAttribute
 from factory.alchemy import SQLAlchemyModelFactory
 from db.setup import get_scoped_session
-from db.models import User, Product
+from db.models import UserModel, ProductModel
 
 
 class ProductFactory(SQLAlchemyModelFactory):
     class Meta:
-        model = Product
+        model = ProductModel
         exclude = ["_name_base", "_price_base"]
         sqlalchemy_session = get_scoped_session()
         sqlalchemy_session_persistence = "commit"

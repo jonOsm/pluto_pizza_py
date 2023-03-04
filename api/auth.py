@@ -10,10 +10,10 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from schema.token import Token, TokenData
-from schema.users import User, UserIn, UserInDB
+from schema.token_schema import TokenData
+from schema.users_schema import User, UserIn, UserInDB
 from db.setup import get_db
-from .db_utils.users import insert_user, get_user_by_email
+from api.crud.users_crud import insert_user, get_user_by_email
 
 SECRET_KEY = getenv("SECRET_KEY")
 ALGORITHM = getenv("ALGORITHM")
