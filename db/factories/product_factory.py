@@ -10,7 +10,7 @@ class ProductFactory(SQLAlchemyModelFactory):
         exclude = ["_name_base", "_price_base"]
         sqlalchemy_session = get_scoped_session()
         sqlalchemy_session_persistence = "commit"
-
+    
     _name_base = Faker("words", nb=2)
     _price_base = Faker("random_number", digits=4)
 

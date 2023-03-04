@@ -1,5 +1,5 @@
 from db.setup import Base
-from sqlalchemy import String, DateTime, func, sql
+from sqlalchemy import ForeignKey, String, DateTime, func, sql
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 # Necessary for sqlite to handle altering constraints: https://stackoverflow.com/a/62651160
@@ -23,7 +23,7 @@ class UserModel(Base):
     disabled: Mapped[bool] = mapped_column(server_default=sql.false())
     hashed_password: Mapped[str]
 
-    # addresses: Mapped[list["Address"]] = relationship(back_populates="user")
+    addresses: Mapped[list["AddressModel"]] = relationship(back_populates="user")
     # orders: Mapped[list["Order"]] = relationship(back_populates="user")
 
 class ProductModel(Base):
@@ -38,20 +38,22 @@ class ProductModel(Base):
     sku: Mapped[str] = mapped_column(String(50))
     image_url: Mapped[str]
 
-# class Address(db.Model):
-#     __tablename__ = "address"
+class AddressModel(Base):
+    __tablename__ = "addresses"
 
-#     id: Mapped[int] = mapped_column(primary_key=True)
-#     userId: Mapped[int] = mapped_column(ForeignKey("user.id"))
-#     street: Mapped[str]
-#     city: Mapped[str]
-#     country: Mapped[str]
-#     province: Mapped[str]
-#     postal_code: Mapped[str]
-#     unit: Mapped[Optional[str]]
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    label: Mapped[str] = mapped_column(String(50))
+    street: Mapped[str]
+    unit: Mapped[str | None]
+    city: Mapped[str]
+    province: Mapped[str]
+    country: Mapped[str] = mapped_column(default='Canada')
+    postal_code: Mapped[str]
+    phone_number: Mapped[str]
+    extension: Mapped[str]
 
-#     user: Mapped[User] = relationship(back_populates="addresses")
-
+    user: Mapped[UserModel] = relationship(back_populates="addresses")
 #     orders: Mapped[List["Order"]] = relationship(back_populates="address")
 
 
