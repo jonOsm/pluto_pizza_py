@@ -1,43 +1,12 @@
-from enum import Enum
-from fastapi import APIRouter
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from schema.products_schema import Product
+from api.db_utils.product import get_all_products 
+from db.setup import get_db 
 
-from schema.users import UserIn
-
-
-class Product(BaseModel):
-    name: str
-
-
-router = APIRouter(prefix="/products")
-
+router = APIRouter(prefix="/products", tags=['products'])
 
 @router.get("/")
-async def read_all_products() -> list[Product]:
-    pass
-
-
-# create user
-@router.post("/user/")
-async def read_all_products(id: UserIn) -> list[Product]:
-    # return specified user
-    pass
-
-
-# read user?
-
-
-@router.get("/user/{id}")
-async def read_all_products(id: int) -> list[Product]:
-    # return specified user
-    pass
-
-
-@router.get("/user")
-async def read_all_products() -> list[Product]:
-    # return all users
-    pass
-
-
-# update user
-# delete user
+async def read_all_products(db:Session =  Depends(get_db)) -> list[Product]:
+    return get_all_products(db)
+    
