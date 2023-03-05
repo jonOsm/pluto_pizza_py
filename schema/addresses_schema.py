@@ -7,7 +7,7 @@ class BaseAddress(BaseModel):
     unit: str | None
     city: str
     province: str
-    postsal_code: str
+    postal_code: str
     phone_number: str
     extension: str | None
 
