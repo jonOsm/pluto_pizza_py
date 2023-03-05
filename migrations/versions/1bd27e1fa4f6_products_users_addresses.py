@@ -1,8 +1,8 @@
-"""add users products and addresses tables
+"""products_users_addresses
 
-Revision ID: 613c9eeab617
+Revision ID: 1bd27e1fa4f6
 Revises: 
-Create Date: 2023-03-04 12:46:45.139415
+Create Date: 2023-03-04 17:21:12.057551
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '613c9eeab617'
+revision = '1bd27e1fa4f6'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -47,7 +47,7 @@ def upgrade() -> None:
     op.create_table('addresses',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('label', sa.String(length=50), nullable=False),
+    sa.Column('label', sa.String(length=50), nullable=True),
     sa.Column('street', sa.String(), nullable=False),
     sa.Column('unit', sa.String(), nullable=True),
     sa.Column('city', sa.String(), nullable=False),
@@ -55,10 +55,10 @@ def upgrade() -> None:
     sa.Column('country', sa.String(), nullable=False),
     sa.Column('postal_code', sa.String(), nullable=False),
     sa.Column('phone_number', sa.String(), nullable=False),
-    sa.Column('extension', sa.String(), nullable=False),
+    sa.Column('extension', sa.String(), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###

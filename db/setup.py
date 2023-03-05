@@ -12,7 +12,7 @@ engine = create_engine(
 
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
+scoped_session_local = scoped_session(SessionLocal)
 
 class Base(DeclarativeBase):
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
@@ -26,7 +26,3 @@ def get_db():
         yield db
     finally:
         db.close()
-
-
-def get_scoped_session():
-    return scoped_session(SessionLocal)

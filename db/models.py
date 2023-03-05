@@ -23,7 +23,7 @@ class UserModel(Base):
     disabled: Mapped[bool] = mapped_column(server_default=sql.false())
     hashed_password: Mapped[str]
 
-    addresses: Mapped[list["AddressModel"]] = relationship(back_populates="user")
+    addresses: Mapped[list["AddressModel"]] = relationship(back_populates="user", cascade='all, delete-orphan')
     # orders: Mapped[list["Order"]] = relationship(back_populates="user")
 
 class ProductModel(Base):
@@ -42,8 +42,8 @@ class AddressModel(Base):
     __tablename__ = "addresses"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    label: Mapped[str] = mapped_column(String(50))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete='CASCADE'), )
+    label: Mapped[str | None] = mapped_column(String(50))
     street: Mapped[str]
     unit: Mapped[str | None]
     city: Mapped[str]
@@ -51,7 +51,7 @@ class AddressModel(Base):
     country: Mapped[str] = mapped_column(default='Canada')
     postal_code: Mapped[str]
     phone_number: Mapped[str]
-    extension: Mapped[str]
+    extension: Mapped[str | None]
 
     user: Mapped[UserModel] = relationship(back_populates="addresses")
 #     orders: Mapped[List["Order"]] = relationship(back_populates="address")
