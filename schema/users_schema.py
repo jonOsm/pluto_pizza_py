@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from schema.addresses_schema import Address
 
 example_schema = {
     "email": "foo@example.com",
@@ -18,7 +19,7 @@ class User(BaseUser):
     id: str
     access_token: str | None
     token_type: str | None
-
+    addresses: list[Address] | None
     class Config:
         schema_extra = {"example": example_schema}
         orm_mode = True

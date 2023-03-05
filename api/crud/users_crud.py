@@ -21,7 +21,7 @@ def insert_user(db: Session, user_in: UserInDB) -> User:
         raise integrity_exception
 
 
-def get_user_by_email(db: Session, email: str) -> User:
+def get_user_by_email(db: Session, email: str, include_addresses: bool = True) -> User:
     #TODO: Determine if there are any errors we should catch here.
     query = select(UserModel).where(UserModel.email == email)
     return db.scalar(query)
