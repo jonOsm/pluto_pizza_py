@@ -12,20 +12,25 @@ class BaseUser(BaseModel):
     email: str
     first_name: str | None = None
     last_name: str | None = None
+
+
+class BaseUserWithDisabled(BaseUser):
     disabled: bool | None = None
 
 
-class User(BaseUser):
+class User(BaseUserWithDisabled):
     id: str
     access_token: str | None
     token_type: str | None
     addresses: list[Address] | None
+
     class Config:
         schema_extra = {"example": example_schema}
         orm_mode = True
 
 
-class UserInDB(BaseUser):
+class UserInDB(BaseUserWithDisabled):
+    disabled: bool | None = None
     hashed_password: str
     email_verified: bool | None
 
@@ -35,3 +40,7 @@ class UserIn(BaseUser):
 
     class Config:
         schema_extra = {"example": {**example_schema, "password": "secret"}}
+
+
+class UserDetails(BaseUser):
+    pass
