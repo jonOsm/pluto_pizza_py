@@ -30,6 +30,15 @@ def get_user_by_email(
     return db.scalar(query)
 
 
+def get_user_by_id(
+    db: Session, id: int, include_addresses: bool = True
+) -> User:
+    # TODO: Determine if there are any errors we should catch here.
+    # TODO: Determine best practices for filtering data
+    query = select(UserModel).where(UserModel.id == id)
+    return db.scalar(query)
+
+
 def db_update_user_details(
     db: Session, user_id: int, user_details: UserDetails
 ) -> User:
