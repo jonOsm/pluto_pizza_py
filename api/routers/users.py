@@ -17,3 +17,8 @@ def update_user_details(
     db: Session = Depends(get_db),
 ):
     return db_update_user_details(db, active_user.id, new_details)
+
+
+@router.get("/active")
+def show_current_user(current_user:User = Depends(get_current_active_user)) -> User:
+    return current_user 

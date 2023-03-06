@@ -10,7 +10,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from schema.token_schema import TokenData
+from schema.token_schema import Token, TokenData
 from schema.users_schema import User, UserIn, UserInDB
 from db.setup import get_db
 from api.crud.users_crud import get_user_by_id, insert_user, get_user_by_email
@@ -61,9 +61,12 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 
 
 def create_id_sub_access_token(id: int):
-    return create_access_token(
-        data={"sub": str(id)}, expires_delta=ACCESS_TOKEN_EXPIRE_TIMEDELTA
-    )
+    return { 
+        "access_token": create_access_token(
+            data={"sub": str(id)}, expires_delta=ACCESS_TOKEN_EXPIRE_TIMEDELTA
+        ), 
+        "token_type": "bearer"
+    }
 
 
 async def get_current_user(
@@ -97,11 +100,11 @@ async def get_current_active_user(
     return current_user
 
 
-@router.post("/token", response_model=User)
+@router.post("/token")
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
-):
+) -> Token:
     # note that form_data only accepts username and password fields as per OAuth2 standard
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
@@ -110,31 +113,14 @@ async def login_for_access_token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    user.access_token = create_id_sub_access_token(user.id)
-    user.token_type = "bearer"
-    return user
+    return create_id_sub_access_token(user.id)
 
 
-@router.post(
-    "/register",
-    response_model=User,
-)
-def register_user(new_user: UserIn = Body(), db: Session = Depends(get_db)):
+@router.post("/register")
+def register_user(new_user: UserIn = Body(), db: Session = Depends(get_db)) -> Token:
     hashed_password = get_password_hash(new_user.password)
     user = insert_user(
         db, UserInDB(**new_user.dict(), hashed_password=hashed_password)
     )
-    user.access_token = create_id_sub_access_token(user.id)
-    user.token_type = "bearer"
 
-    return user
-
-
-@router.get("/users/me/", response_model=User)
-async def read_users_me(current_user: User = Depends(get_current_active_user)):
-    return current_user
-
-
-# @router.get("/users/me/items/")
-# async def read_own_items(current_user: User = Depends(get_current_active_user)):
-#     return [{"item_id": "Foo", "owner": current_user.username}]
+    return create_id_sub_access_token(user.id)
