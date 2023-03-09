@@ -15,7 +15,7 @@ def update_user_details(
     new_details: UserDetails = Body(),
     active_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
-):
+) -> User: 
     return db_update_user_details(db, active_user.id, new_details)
 
 

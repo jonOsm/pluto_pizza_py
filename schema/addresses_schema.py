@@ -28,8 +28,8 @@ class Address(BaseAddress):
     class Config:
         orm_mode = True
 
-
-class AddressDelete:
+#Note: This inherits from BaseModel NOT BaseAddress
+class AddressDelete(BaseModel):
     id: int
 
     class Config:

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from fastapi import APIRouter, Body, Depends
-from api.crud.addresses_crud import create_address
+from fastapi import APIRouter, Body, Depends, HTTPException, status 
+from api.crud.addresses_crud import create_address, address_belongs_to_user, delete_address 
 from schema.addresses_schema import (
     AddressDelete,
     AddressIn,
@@ -29,12 +29,18 @@ def store_address(
     return create_address(db, address_to_create)
 
 
-@router.delete("/{id}")
+@router.delete("/{address_id}")
 def destroy_address(
-    id: int,
+    address_id: int,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ) -> AddressDelete:
     # check that address belongs to user - crud method?
+    if(not address_belongs_to_user(db, current_user, address_id)):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User may not delete this addesses"
+        )
+        
     # delete the address - crud method.
-    pass
+    return AddressDelete(id=delete_address(db, address_id))

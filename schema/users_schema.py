@@ -20,8 +20,6 @@ class BaseUserWithDisabled(BaseUser):
 
 class User(BaseUserWithDisabled):
     id: str
-    access_token: str | None
-    token_type: str | None
     addresses: list[Address] | None
 
     class Config:
