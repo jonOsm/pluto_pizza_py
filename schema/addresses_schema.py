@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
+
 class BaseAddress(BaseModel):
-    user_id: int
     label: str | None
     street: str
     unit: str | None
@@ -11,10 +11,26 @@ class BaseAddress(BaseModel):
     phone_number: str
     extension: str | None
 
+
 class AddressIn(BaseAddress):
     pass
-     
+
+
+class AddressInDB(BaseAddress):
+    user_id: int
+    pass
+
+
 class Address(BaseAddress):
+    user_id: int
     id: int
+
+    class Config:
+        orm_mode = True
+
+
+class AddressDelete:
+    id: int
+
     class Config:
         orm_mode = True
