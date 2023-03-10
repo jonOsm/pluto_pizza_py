@@ -13,7 +13,12 @@ from sqlalchemy.orm import Session
 from schema.token_schema import Token, TokenData
 from schema.users_schema import User, UserIn, UserInDB
 from db.setup import get_db
-from api.crud.users_crud import get_user_by_id, insert_user, get_user_by_email
+from api.crud.users_crud import (
+    get_user_by_id,
+    insert_user,
+    get_user_by_email,
+    update_user_password,
+)
 
 SECRET_KEY = getenv("SECRET_KEY")
 ALGORITHM = getenv("ALGORITHM")
@@ -61,11 +66,11 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 
 
 def create_id_sub_access_token(id: int):
-    return { 
+    return {
         "access_token": create_access_token(
             data={"sub": str(id)}, expires_delta=ACCESS_TOKEN_EXPIRE_TIMEDELTA
-        ), 
-        "token_type": "bearer"
+        ),
+        "token_type": "bearer",
     }
 
 
@@ -119,8 +124,18 @@ async def login_for_access_token(
 @router.post("/register")
 def register_user(new_user: UserIn = Body(), db: Session = Depends(get_db)) -> Token:
     hashed_password = get_password_hash(new_user.password)
-    user = insert_user(
-        db, UserInDB(**new_user.dict(), hashed_password=hashed_password)
-    )
+    user = insert_user(db, UserInDB(**new_user.dict(), hashed_password=hashed_password))
 
     return create_id_sub_access_token(user.id)
+
+
+# TODO: require password confirmation
+@router.put("/password")
+def modify_password(
+    new_password: str = Body(),
+    active_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    new_password_hash = get_password_hash(new_password)
+    update_user_password(db, active_user.id, new_password_hash)
+    return {"message": "Password updated."}
