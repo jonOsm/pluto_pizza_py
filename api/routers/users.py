@@ -11,14 +11,16 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.put("/profile")
-def update_user_details(
+def modify_user_details(
     new_details: UserDetails = Body(),
     active_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
-) -> User: 
+) -> User:
     return db_update_user_details(db, active_user.id, new_details)
 
 
 @router.get("/active")
-def show_current_user(current_user:User = Depends(get_current_active_user)) -> User:
-    return current_user 
+def show_current_user(
+    current_user: User = Depends(get_current_active_user),
+) -> User:
+    return current_user

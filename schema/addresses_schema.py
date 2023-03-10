@@ -16,6 +16,10 @@ class AddressIn(BaseAddress):
     pass
 
 
+class AddressInEdit(BaseAddress):
+    id: int
+
+
 class AddressInDB(BaseAddress):
     user_id: int
     pass
@@ -28,7 +32,8 @@ class Address(BaseAddress):
     class Config:
         orm_mode = True
 
-#Note: This inherits from BaseModel NOT BaseAddress
+
+# Note: This inherits from BaseModel NOT BaseAddress
 class AddressDelete(BaseModel):
     id: int
 

@@ -1,6 +1,11 @@
 from sqlalchemy.orm import Session
-from fastapi import APIRouter, Body, Depends, HTTPException, status 
-from api.crud.addresses_crud import create_address, address_belongs_to_user, delete_address 
+from fastapi import APIRouter, Body, Depends, HTTPException, status
+from api.crud.addresses_crud import (
+    create_address,
+    address_belongs_to_user,
+    delete_address,
+    update_address,
+)
 from schema.addresses_schema import (
     AddressDelete,
     AddressIn,
@@ -12,6 +17,11 @@ from schema.users_schema import User
 from db.setup import get_db
 
 router = APIRouter(prefix="/addresses", tags=["addresses"])
+
+user_unauthorized_exception = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="User unauthorized. Access to resource rejected.",
+)
 
 
 @router.get("/")
@@ -36,11 +46,23 @@ def destroy_address(
     db: Session = Depends(get_db),
 ) -> AddressDelete:
     # check that address belongs to user - crud method?
-    if(not address_belongs_to_user(db, current_user, address_id)):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User may not delete this addesses"
-        )
-        
+    if not address_belongs_to_user(db, current_user, address_id):
+        raise user_unauthorized_exception
     # delete the address - crud method.
     return AddressDelete(id=delete_address(db, address_id))
+
+
+@router.put("/{address_id}")
+def modify_address(
+    address_id: int,
+    address: AddressIn,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+) -> Address:
+    # check that address belongs to user
+    if not address_belongs_to_user(db, current_user, address_id):
+        raise user_unauthorized_exception
+
+    address_to_edit = AddressInDB(**address.dict(), user_id=current_user.id)
+    # modify address and return modified address
+    return update_address(db, address_to_edit, address_id)
