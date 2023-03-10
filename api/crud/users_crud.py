@@ -3,7 +3,7 @@ from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from schema.users_schema import UserDetails, UserInDB, User
+from schema.users_schema import UserDelete, UserDetails, UserInDB, User
 from db.models import UserModel
 
 
@@ -50,3 +50,11 @@ def db_update_user_details(
     db.execute(stmt)
     db.commit()
     return get_user_by_email(db, user_details.email)
+
+
+def delete_user(db: Session, user_id: int) -> UserDelete:
+    user = db.get(UserModel, user_id)
+    db.delete(user)
+    db.commit()
+
+    return user

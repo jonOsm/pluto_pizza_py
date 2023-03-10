@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Body, Depends
-from api.crud.users_crud import db_update_user_details
+from api.crud.users_crud import db_update_user_details, delete_user
 from db.setup import get_db
 from sqlalchemy.orm import Session
 
-from schema.users_schema import User, UserDetails
+from schema.users_schema import User, UserDelete, UserDetails
 from api.auth import get_current_active_user
 
 
@@ -24,3 +24,11 @@ def show_current_user(
     current_user: User = Depends(get_current_active_user),
 ) -> User:
     return current_user
+
+
+@router.delete("/profile")
+def destroy_user(
+    active_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+) -> UserDelete:
+    return delete_user(db, active_user.id)

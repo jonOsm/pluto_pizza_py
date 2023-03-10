@@ -40,5 +40,12 @@ class UserIn(BaseUser):
         schema_extra = {"example": {**example_schema, "password": "secret"}}
 
 
+class UserDelete(BaseModel):
+    id: str
+
+    class Config:
+        orm_mode = True
+
+
 class UserDetails(BaseUser):
     pass
