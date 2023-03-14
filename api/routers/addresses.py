@@ -23,6 +23,11 @@ user_unauthorized_exception = HTTPException(
     detail="User unauthorized. Access to resource rejected.",
 )
 
+resource_not_found_exception = HTTPException(
+    status_code=status.HTTP_404_NOT_FOUND,
+    detail="Unable to find the specified resource.",
+)
+
 
 @router.get("/")
 def get_all_user_addresses(user_id: str):
@@ -45,11 +50,14 @@ def destroy_address(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ) -> AddressDelete:
-    # check that address belongs to user - crud method?
     if not address_belongs_to_user(db, current_user, address_id):
         raise user_unauthorized_exception
-    # delete the address - crud method.
-    return AddressDelete(id=delete_address(db, address_id))
+
+    address_deleted_id = delete_address(db, address_id)
+    if address_deleted_id is None:
+        raise resource_not_found_exception
+
+    return AddressDelete(id=address_deleted_id)
 
 
 @router.put("/{address_id}")

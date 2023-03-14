@@ -9,7 +9,7 @@ def read_address(db: Session, address_id: int):
     return db.get(AddressModel, address_id)
 
 
-def create_address(db: Session, address_to_create: AddressInDB) -> Address:
+def create_address(db: Session, address_to_create: AddressInDB):
     address = AddressModel(**address_to_create.dict())
     db.add(address)
     db.commit()
@@ -19,14 +19,14 @@ def create_address(db: Session, address_to_create: AddressInDB) -> Address:
 
 def address_belongs_to_user(db: Session, user: User, address_id: int) -> bool:
     address = db.get(AddressModel, address_id)
-    return address.user_id == user.id
+    return False if address is None else address.user_id == user.id
 
 
-def delete_address(db: Session, address_id) -> AddressDelete:
+def delete_address(db: Session, address_id) -> int | None:
     address = db.get(AddressModel, address_id)
     db.delete(address)
     db.commit()
-    return address.id
+    return None if address is None else address.id
 
 
 def update_address(

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from schema.addresses_schema import Address
 
 example_schema = {
@@ -9,7 +9,7 @@ example_schema = {
 
 
 class BaseUser(BaseModel):
-    email: str
+    email: str = Field(min_length=5)
     first_name: str | None = None
     last_name: str | None = None
 
@@ -19,7 +19,7 @@ class BaseUserWithDisabled(BaseUser):
 
 
 class User(BaseUserWithDisabled):
-    id: str
+    id: int
     addresses: list[Address] | None
 
     class Config:

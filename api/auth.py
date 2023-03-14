@@ -1,28 +1,35 @@
-from dotenv import load_dotenv
-
-load_dotenv()
-from os import getenv
 from datetime import datetime, timedelta
+from os import getenv
 
-from jose import JWTError, jwt
+from dotenv import load_dotenv
 from fastapi import APIRouter, Body, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from schema.token_schema import Token, TokenData
-from schema.users_schema import User, UserIn, UserInDB
-from db.setup import get_db
 from api.crud.users_crud import (
+    get_user_by_email,
     get_user_by_id,
     insert_user,
-    get_user_by_email,
     update_user_password,
 )
+from db.setup import get_db
+from schema.token_schema import Token, TokenData
+from schema.users_schema import User, UserIn, UserInDB
 
-SECRET_KEY = getenv("SECRET_KEY")
-ALGORITHM = getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+load_dotenv()
+
+SECRET_KEY = str(getenv("SECRET_KEY"))
+assert SECRET_KEY is not None
+
+ALGORITHM = str(getenv("ALGORITHM"))
+assert ALGORITHM is not None
+
+_ACCESS_TOKEN_EXPIRE_MINUTES = getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+assert _ACCESS_TOKEN_EXPIRE_MINUTES is not None
+
+ACCESS_TOKEN_EXPIRE_MINUTES = int(_ACCESS_TOKEN_EXPIRE_MINUTES)
 ACCESS_TOKEN_EXPIRE_TIMEDELTA = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -65,10 +72,10 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-def create_id_sub_access_token(id: int):
+def create_id_sub_access_token(user_id: int):
     return {
         "access_token": create_access_token(
-            data={"sub": str(id)}, expires_delta=ACCESS_TOKEN_EXPIRE_TIMEDELTA
+            data={"sub": str(user_id)}, expires_delta=ACCESS_TOKEN_EXPIRE_TIMEDELTA
         ),
         "token_type": "bearer",
     }
@@ -84,13 +91,16 @@ async def get_current_user(
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: int = int(payload.get("sub"))
-        if user_id is None:
+        raw_sub = payload.get("sub")
+        if raw_sub is None:
             raise credentials_exception
+        user_id: int = int(raw_sub)
         token_data = TokenData(user_id=user_id)
-    except JWTError as e:
-        raise credentials_exception
+    except JWTError as exc:
+        raise credentials_exception from exc
     # user = get_user_by_email(db, email=token_data.email)
+    if token_data.user_id is None:
+        raise credentials_exception
     user = get_user_by_id(db, id=token_data.user_id)
     if user is None:
         raise credentials_exception
@@ -137,5 +147,5 @@ def modify_password(
     db: Session = Depends(get_db),
 ):
     new_password_hash = get_password_hash(new_password)
-    update_user_password(db, active_user.id, new_password_hash)
+    update_user_password(db, int(active_user.id), new_password_hash)
     return {"message": "Password updated."}
