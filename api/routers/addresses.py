@@ -29,11 +29,6 @@ resource_not_found_exception = HTTPException(
 )
 
 
-@router.get("/")
-def get_all_user_addresses(user_id: str):
-    pass
-
-
 @router.post("/create")
 def store_address(
     address: AddressIn = Body(),

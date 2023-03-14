@@ -1,8 +1,9 @@
 from db.setup import Base
-from sqlalchemy import ForeignKey, String, DateTime, func, sql
+from sqlalchemy import ForeignKey, String, sql
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-# Necessary for sqlite to handle altering constraints: https://stackoverflow.com/a/62651160
+# Necessary for sqlite to handle altering constraints:
+# https://stackoverflow.com/a/62651160
 # convention = {
 #     "ix": "ix_%(column_0_label)s",
 #     "uq": "uq_%(table_name)s_%(column_0_name)s",
@@ -23,8 +24,11 @@ class UserModel(Base):
     disabled: Mapped[bool] = mapped_column(server_default=sql.false())
     hashed_password: Mapped[str]
 
-    addresses: Mapped[list["AddressModel"]] = relationship(back_populates="user", cascade='all, delete-orphan')
+    addresses: Mapped[list["AddressModel"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
     # orders: Mapped[list["Order"]] = relationship(back_populates="user")
+
 
 class ProductModel(Base):
     __tablename__ = "products"
@@ -38,22 +42,27 @@ class ProductModel(Base):
     sku: Mapped[str] = mapped_column(String(50))
     image_url: Mapped[str]
 
+
 class AddressModel(Base):
     __tablename__ = "addresses"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete='CASCADE'), )
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+    )
     label: Mapped[str | None] = mapped_column(String(50))
     street: Mapped[str]
     unit: Mapped[str | None]
     city: Mapped[str]
     province: Mapped[str]
-    country: Mapped[str] = mapped_column(default='Canada')
+    country: Mapped[str] = mapped_column(default="Canada")
     postal_code: Mapped[str]
     phone_number: Mapped[str]
     extension: Mapped[str | None]
 
     user: Mapped[UserModel] = relationship(back_populates="addresses")
+
+
 #     orders: Mapped[List["Order"]] = relationship(back_populates="address")
 
 

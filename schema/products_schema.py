@@ -1,8 +1,9 @@
 from pydantic import BaseModel
 
+
 class Product(BaseModel):
     id: int
-    name: str 
+    name: str
     base_price: float
     base_size: str
     is_draft: bool

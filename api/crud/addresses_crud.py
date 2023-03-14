@@ -1,6 +1,6 @@
-from sqlalchemy import select, update
+from sqlalchemy import update
 from sqlalchemy.orm import Session
-from schema.addresses_schema import AddressDelete, AddressInDB, Address
+from schema.addresses_schema import AddressInDB, Address
 from db.models import AddressModel
 from schema.users_schema import User
 

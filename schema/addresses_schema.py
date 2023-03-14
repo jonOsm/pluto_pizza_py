@@ -22,7 +22,6 @@ class AddressInEdit(BaseAddress):
 
 class AddressInDB(BaseAddress):
     user_id: int
-    pass
 
 
 class Address(BaseAddress):

@@ -21,14 +21,14 @@ def insert_user(db: Session, user_in: UserInDB):
         raise integrity_exception
 
 
-def get_user_by_email(db: Session, email: str, include_addresses: bool = True):
+def get_user_by_email(db: Session, email: str):
     # TODO: Determine if there are any errors we should catch here.
     # TODO: Determine best practices for filtering data
     query = select(UserModel).where(UserModel.email == email)
     return db.scalar(query)
 
 
-def get_user_by_id(db: Session, id: int, include_addresses: bool = True):
+def get_user_by_id(db: Session, id: int):
     # TODO: Determine if there are any errors we should catch here.
     # TODO: Determine best practices for filtering data
     query = select(UserModel).where(UserModel.id == id)

@@ -20,12 +20,12 @@ types-python-jose = "^3.3.4.5"
 types-passlib = "^1.7.7.10"
 pydantic = "^1.10.6"
 types-factory-boy = "^0.4.1"
+flake8 = "^6.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
 mypy = "^1.1.1"
-prospector = "^1.9.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -34,6 +34,9 @@ build-backend = "poetry.core.masonry.api"
 [tool.pylint.'MESSAGES CONTROL']
 extension-pkg-whitelist = "pydantic"
 jobs=0
+
+[tool.flake8]
+max-line-length = 88
 
 [tool.mypy]
 exclude = "(migrations|factories)/"
