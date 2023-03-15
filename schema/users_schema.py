@@ -10,8 +10,8 @@ example_schema = {
 
 class BaseUser(BaseModel):
     email: str = Field(min_length=5)
-    first_name: str | None = None
-    last_name: str | None = None
+    first_name: str
+    last_name: str
 
 
 class BaseUserWithDisabled(BaseUser):
