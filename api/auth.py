@@ -141,7 +141,7 @@ def register_user(new_user: UserIn = Body(), db: Session = Depends(get_db)) -> T
 
 # TODO: require password confirmation
 @router.put("/password")
-def modify_password(
+def reset_password(
     new_password: str = Body(),
     active_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
