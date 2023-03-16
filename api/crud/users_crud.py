@@ -10,10 +10,13 @@ from db.models import UserModel
 def insert_user(db: Session, user_in: UserInDB):
     integrity_exception = HTTPException(
         status_code=status.HTTP_409_CONFLICT,
-        detail={
-            "msg": "Email already assocaited with an account.",
-            "type": "custom.duplicate",
-        },
+        detail=[
+            {
+                "msg": "Email already assocaited with an account.",
+                "loc": None,
+                "type": "custom.duplicate_email",
+            }
+        ],
     )
     try:
         db.add(UserModel(**user_in.dict()))
