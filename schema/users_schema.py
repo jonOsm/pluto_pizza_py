@@ -11,8 +11,8 @@ example_schema = {
 
 class BaseUser(BaseModel):
     email: EmailStr
-    first_name: str = Field(min_length=1, max_length=32)
-    last_name: str = Field(min_length=1, max_length=32)
+    first_name: str = Field(min_length=1, max_length=64)
+    last_name: str = Field(min_length=1, max_length=64)
 
 
 class BaseUserWithDisabled(BaseUser):

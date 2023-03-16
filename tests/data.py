@@ -138,7 +138,7 @@ _invalid_first_name_input = [
     (
         {
             "email": "j@j.j",
-            "first_name": "a" * 33,
+            "first_name": "a" * 65,
             "last_name": "bar",
             "password": "P@ssword123",
         },
@@ -196,7 +196,7 @@ _invalid_last_name_input = [
         {
             "email": "j@j.j",
             "first_name": "foo",
-            "last_name": "a" * 33,
+            "last_name": "a" * 65,
             "password": "P@ssword123",
         },
         {
@@ -316,7 +316,8 @@ _invalid_password_input = [
         {
             "status_code": 422,
             "loc": ["body", "password"],
-            "msg": "1 digit",  # limitation of validator decorator
+            # using msg instead of type - limitation of validator decorator
+            "msg": "1 digit",
         },
         "password should contain a symbol",
     ),
@@ -330,7 +331,8 @@ _invalid_password_input = [
         {
             "status_code": 422,
             "loc": ["body", "password"],
-            "msg": "1 lowercase",  # limitation of validator decorator
+            # using msg instead of type - limitation of validator decorator
+            "msg": "1 lowercase",
         },
         "password should contain a lowercase letter",
     ),
@@ -341,4 +343,36 @@ invalid_register_input = [
     *_invalid_first_name_input,
     *_invalid_last_name_input,
     *_invalid_password_input,
+]
+
+
+valid_register_input = [
+    (
+        {
+            "email": "j@j.j",
+            "first_name": "j",
+            "last_name": "j",
+            "password": "12345aA!",
+        },
+        {
+            "status_code": 200,
+        },
+        "all fields should be accepted at their minimum lengths",
+    ),
+    (
+        {
+            # https://stackoverflow.com/a/574698
+            # unsure why the email domain portion is rejected at higher lengths
+            # should be safe up to 185 (64+1+185+4=254)
+            # this is good enough for now (and the foreseeable future)
+            "email": ("a" * 64) + "@" + ("a" * 50) + ".com",
+            "first_name": "a" * 64,
+            "last_name": "a" * 64,
+            "password": "12345aA!" + ("a" * 24),
+        },
+        {
+            "status_code": 200,
+        },
+        "all fields should be accepted at their maximum lengths",
+    ),
 ]

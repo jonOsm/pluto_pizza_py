@@ -1,5 +1,6 @@
 import pytest
-from .data import invalid_register_input
+import re
+from .data import invalid_register_input, valid_register_input
 
 # def test_login():
 #     assert False
@@ -23,34 +24,21 @@ def test_register_invalid_input(client, body, expected, msg):
         assert expected["msg"] in detail["msg"], msg
 
 
-valid_register_input = [
-    (
-        {
-            "email": "jp@pj.yo",
-            "first_name": "foo",
-            "last_name": "bar",
-            "password": "password",
-        },
-        200,
-        "valid fields should pass",
-    ),
-]
+@pytest.mark.parametrize("body, expected, msg", valid_register_input)
+def test_register_valid_input(client, body, expected, msg):
+    res = client.post("/register", json=body)
+    assert res.status_code == expected["status_code"], msg
 
+    try:
+        jwt_regex = re.compile(r"^[A-Za-z0-9_-]{2,}(?:\.[A-Za-z0-9_-]{2,}){2}$")
+    except re.errors() as e:
+        raise e
 
-# @pytest.mark.parametrize("body, status_code, msg", valid_register_input)
-# def test_register_valid_input(client, body, status_code, msg):
-#     # TODO: remove this if statement and add a record in a fixture
-#     if body.get("first_name") == "duplicate":
-#         client.post("/register", json=body)
-
-#     res = client.post("/register", json=body)
-#     assert res.status_code == status_code, msg
-
-#     if res.status_200 != 200:
-#         assert (
-#             res.json["value_error.any_str.min_length"]
-#             == "value_error.any_str.min_length"
-#         )
+    res_body = res.json()
+    assert jwt_regex.fullmatch(res_body["access_token"]), msg
+    assert res_body["token_type"] == "bearer", msg
+    # TODO: add check that token contains sub with id
+    # TODO: add check that id matches id of user in DB
 
 
 # def test_reset_password():
