@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field
+import re
+from pydantic import BaseModel, EmailStr, Field, SecretStr, constr, validator
 from schema.addresses_schema import Address
 
 example_schema = {
@@ -9,7 +10,7 @@ example_schema = {
 
 
 class BaseUser(BaseModel):
-    email: str = Field(min_length=5)
+    email: EmailStr
     first_name: str
     last_name: str
 
@@ -34,7 +35,23 @@ class UserInDB(BaseUserWithDisabled):
 
 
 class UserIn(BaseUser):
-    password: str
+    password: SecretStr = Field(min_length=8, max_length=32)
+
+    @validator("password")
+    def password_constraints(cls, v):
+        try:
+            pattern = re.compile(
+                r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{0,}$"
+            )
+        except re.error as e:
+            raise e
+
+        if not pattern.match(v.get_secret_value()):
+            print("no match?")
+            raise ValueError(
+                "Password must have at least 1 uppercase, 1 lower case, 1 digit and 1 symbol."
+            )
+        return v
 
     class Config:
         schema_extra = {"example": {**example_schema, "password": "secret"}}

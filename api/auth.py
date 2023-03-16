@@ -6,6 +6,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from pydantic import SecretStr
 from sqlalchemy.orm import Session
 
 from api.crud.users_crud import (
@@ -133,7 +134,7 @@ async def login_for_access_token(
 
 @router.post("/register")
 def register_user(new_user: UserIn = Body(), db: Session = Depends(get_db)) -> Token:
-    hashed_password = get_password_hash(new_user.password)
+    hashed_password = get_password_hash(new_user.password.get_secret_value())
     user = insert_user(db, UserInDB(**new_user.dict(), hashed_password=hashed_password))
 
     return create_id_sub_access_token(user.id)
@@ -142,10 +143,10 @@ def register_user(new_user: UserIn = Body(), db: Session = Depends(get_db)) -> T
 # TODO: require password confirmation
 @router.put("/password")
 def reset_password(
-    new_password: str = Body(),
+    new_password: SecretStr = Body(),
     active_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    new_password_hash = get_password_hash(new_password)
+    new_password_hash = get_password_hash(new_password.get_secret_value())
     update_user_password(db, int(active_user.id), new_password_hash)
     return {"message": "Password updated."}
