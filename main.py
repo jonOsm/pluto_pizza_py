@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_pagination import add_pagination
 from api import auth
 from api.routers import users, products, addresses
 
@@ -27,3 +28,6 @@ app.include_router(addresses.router)
 @app.get("/health")
 async def health_check() -> dict[str, str]:
     return {"status": "online"}
+
+
+add_pagination(app)
