@@ -8,3 +8,5 @@ alembic.ini
 *.sqlite
 .env
 test.db
+static/*
+!static

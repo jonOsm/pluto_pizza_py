@@ -1,16 +1,16 @@
 from factory import Faker, LazyAttribute
 from factory.alchemy import SQLAlchemyModelFactory
-from db.setup import scoped_session_local 
-from db.models import UserModel, ProductModel
+from db.setup import scoped_session_local
+from db.models import ProductModel
 
 
 class ProductFactory(SQLAlchemyModelFactory):
     class Meta:
         model = ProductModel
         exclude = ["_name_base", "_price_base"]
-        sqlalchemy_session = scoped_session_local 
+        sqlalchemy_session = scoped_session_local
         sqlalchemy_session_persistence = "commit"
-    
+
     _name_base = Faker("words", nb=2)
     _price_base = Faker("random_number", digits=4)
 
@@ -22,4 +22,13 @@ class ProductFactory(SQLAlchemyModelFactory):
     is_draft = Faker("boolean", chance_of_getting_true=10)
     stock = Faker("random_number", digits=2)
     sku = Faker("uuid4")
-    image_url = "todo"
+    image_url = Faker(
+        "random_element",
+        elements=[
+            "/static/img/products/pepperoni.jpg",
+            "/static/img/products/mediterranean.jpg",
+            "/static/img/products/arugula.jpg",
+            "/static/img/products/cheese.jfif",
+            "/static/img/products/hawaiian.webp",
+        ],
+    )
