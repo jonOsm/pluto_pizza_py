@@ -63,6 +63,26 @@ class AddressModel(Base):
     user: Mapped[UserModel] = relationship(back_populates="addresses")
 
 
+class ToppingModel(Base):
+    __tablename__ = "toppings"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    type_id: Mapped[int] = mapped_column(ForeignKey("topping_types.id"))
+    name: Mapped[str]
+    base_price: Mapped[float] = mapped_column()
+    # debating whether this should be computed based on price
+    # is_premium: Mapped[bool]
+    topping_type: Mapped["ToppingTypeModel"] = relationship(back_populates="toppings")
+
+
+class ToppingTypeModel(Base):
+    __tablename__ = "topping_types"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+
+    toppings: Mapped[ToppingModel] = relationship(back_populates="topping_type")
+
+
 #     orders: Mapped[List["Order"]] = relationship(back_populates="address")
 
 
