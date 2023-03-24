@@ -1,6 +1,7 @@
 from db.setup import Base
-from sqlalchemy import ForeignKey, String, sql
+from sqlalchemy import Column, ForeignKey, String, Table, sql
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from .association_tables import product_customization_toppings_table
 
 # Necessary for sqlite to handle altering constraints:
 # https://stackoverflow.com/a/62651160
@@ -72,6 +73,9 @@ class ToppingModel(Base):
     # debating whether this should be computed based on price
     # is_premium: Mapped[bool]
     topping_type: Mapped["ToppingTypeModel"] = relationship(back_populates="toppings")
+    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
+        secondary=product_customization_toppings_table, back_populates="toppings"
+    )
 
 
 class ToppingTypeModel(Base):
@@ -83,25 +87,92 @@ class ToppingTypeModel(Base):
     toppings: Mapped[ToppingModel] = relationship(back_populates="topping_type")
 
 
-#     orders: Mapped[List["Order"]] = relationship(back_populates="address")
+class CrustTypeModel(Base):
+    __tablename__ = "crust_types"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
+        back_populates="crust_type"
+    )
 
 
-# class Order(db.Model):
-#     __tablename__ = "order"
-#     id: Mapped[int] = mapped_column(primary_key=True)
-#     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-#     address_id: Mapped[int] = mapped_column(ForeignKey("address.id"))
-#     # tax_id
-#     order_status_id: Mapped[int] = mapped_column(ForeignKey("order_status.id"))
-
-#     user: Mapped[User] = relationship(back_populates="orders")
-#     address: Mapped[Address] = relationship(back_populates="orders")
-#     order_status: Mapped["OrderStatus"] = relationship(back_populates="orders")
+class CrustThicknessModel(Base):
+    __tablename__ = "crust_thicknesses"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
+        back_populates="crust_thickness"
+    )
 
 
-# class OrderStatus(db.Model):
-#     __tablename__ = "order_status"
-#     id: Mapped[int] = mapped_column(primary_key=True)
-#     name: Mapped[str] = mapped_column(unique=True)
+class CheeseTypeModel(Base):
+    __tablename__ = "cheese_types"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
+        back_populates="cheese_type"
+    )
 
-#     orders: Mapped[List["Order"]] = relationship(back_populates="order_status")
+
+class CheeseAmtModel(Base):
+    __tablename__ = "cheese_amts"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    base_price: Mapped[float]
+    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
+        back_populates="cheese_amt"
+    )
+
+
+class SauceTypeModel(Base):
+    __tablename__ = "sauce_types"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
+        back_populates="sauce_type"
+    )
+
+
+class SauceAmtModel(Base):
+    __tablename__ = "sauce_amts"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
+        back_populates="sauce_amt"
+    )
+
+
+class ProductCustomizationsModel(Base):
+    __tablename__ = "product_customizations"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
+    crust_type_id: Mapped[int] = mapped_column(ForeignKey("crust_types.id"))
+    crust_thickness_id: Mapped[int] = mapped_column(ForeignKey("crust_thicknesses.id"))
+    cheese_type_id: Mapped[int] = mapped_column(ForeignKey("cheese_types.id"))
+    cheese_amt_id: Mapped[int] = mapped_column(ForeignKey("cheese_amts.id"))
+    sauce_type_id: Mapped[int] = mapped_column(ForeignKey("sauce_types.id"))
+    sauce_amt_id: Mapped[int] = mapped_column(ForeignKey("sauce_amts.id"))
+
+    toppings: Mapped[ToppingModel] = relationship(
+        secondary=product_customization_toppings_table,
+        back_populates="product_customizations",
+    )
+    crust_type: Mapped[CrustTypeModel] = relationship(
+        back_populates="product_customizations"
+    )
+    crust_thickness: Mapped[CrustThicknessModel] = relationship(
+        back_populates="product_customizations"
+    )
+    cheese_type: Mapped[CheeseTypeModel] = relationship(
+        back_populates="product_customizations"
+    )
+    cheese_amt: Mapped[CheeseAmtModel] = relationship(
+        back_populates="product_customizations"
+    )
+    sauce_type: Mapped[SauceTypeModel] = relationship(
+        back_populates="product_customizations"
+    )
+    sauce_amt: Mapped[SauceAmtModel] = relationship(
+        back_populates="product_customizations"
+    )

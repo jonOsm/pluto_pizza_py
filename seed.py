@@ -4,7 +4,16 @@ from factory.alchemy import SQLAlchemyModelFactory
 from db.setup import get_db
 from db.factories.user_factory import UserFactory, UserModel
 from db.factories.product_factory import ProductFactory, ProductModel
-from db.models import ToppingModel, ToppingTypeModel
+from db.models import (
+    CheeseAmtModel,
+    CheeseTypeModel,
+    CrustThicknessModel,
+    CrustTypeModel,
+    SauceAmtModel,
+    SauceTypeModel,
+    ToppingModel,
+    ToppingTypeModel,
+)
 
 
 def delete_all_records(session, models):
@@ -62,6 +71,12 @@ def seed_toppings(session: Session, toppingTypes: list[ToppingTypeModel]):
     session.commit()
 
 
+def seed_name_only(session: Session, model, names: list[str]):
+    entities = [model(name=n) for n in names]
+    session.add_all(entities)
+    session.commit()
+
+
 if __name__ == "__main__":
     print("Seeding DB...")
     models = [UserModel, ProductModel, ToppingModel, ToppingTypeModel]
@@ -71,6 +86,22 @@ if __name__ == "__main__":
 
     topping_types = seed_topping_types(session)
     seed_toppings(session, topping_types)
+
+    seed_name_only(session, CrustTypeModel, ["white", "whole grain", "keto-friendly"])
+    seed_name_only(session, CrustThicknessModel, ["thin", "normal", "thick"])
+    seed_name_only(session, CheeseTypeModel, ["mozzarella", "four cheese blend"])
+    seed_name_only(session, SauceTypeModel, ["classic tomato", "pesto", "bbq"])
+    seed_name_only(session, SauceAmtModel, ["less", "normal", "extra"])
+
+    session.add_all(
+        [
+            CheeseAmtModel(name="less", base_price=0),
+            CheeseAmtModel(name="normal", base_price=0),
+            CheeseAmtModel(name="extra", base_price="2.99"),
+        ]
+    )
+    session.commit()
+
     gen_entity(UserFactory, 50, "Users")
     gen_entity(ProductFactory, 50, "Products")
 
