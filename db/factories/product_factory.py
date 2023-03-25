@@ -1,7 +1,8 @@
-from factory import Faker, LazyAttribute
+from factory import Faker, LazyAttribute, RelatedFactoryList
 from factory.alchemy import SQLAlchemyModelFactory
 from db.setup import scoped_session_local
 from db.models import ProductModel
+from .product_customizations_factory import ProductCustomizationsFactory
 
 
 class ProductFactory(SQLAlchemyModelFactory):
@@ -19,6 +20,11 @@ class ProductFactory(SQLAlchemyModelFactory):
     base_size = Faker(
         "random_element", elements=["small", "medium", "large", "xl", "party"]
     )
+
+    product_customizations = RelatedFactoryList(
+        ProductCustomizationsFactory, "product", 10
+    )
+
     is_draft = Faker("boolean", chance_of_getting_true=10)
     stock = Faker("random_number", digits=2)
     sku = Faker("uuid4")

@@ -1,5 +1,5 @@
 from db.setup import Base
-from sqlalchemy import Column, ForeignKey, String, Table, sql
+from sqlalchemy import Boolean, ForeignKey, String, Table, sql
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .association_tables import product_customization_toppings_table
 
@@ -42,6 +42,9 @@ class ProductModel(Base):
     stock: Mapped[int] = mapped_column(default=0)
     sku: Mapped[str] = mapped_column(String(50))
     image_url: Mapped[str]
+    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
+        back_populates="product"
+    )
 
 
 class AddressModel(Base):
@@ -146,7 +149,10 @@ class ProductCustomizationsModel(Base):
     __tablename__ = "product_customizations"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
+    is_default: Mapped[bool] = mapped_column(default=False)
+    product_id: Mapped[int] = mapped_column(
+        ForeignKey("products.id", ondelete="CASCADE")
+    )
     crust_type_id: Mapped[int] = mapped_column(ForeignKey("crust_types.id"))
     crust_thickness_id: Mapped[int] = mapped_column(ForeignKey("crust_thicknesses.id"))
     cheese_type_id: Mapped[int] = mapped_column(ForeignKey("cheese_types.id"))
@@ -154,6 +160,9 @@ class ProductCustomizationsModel(Base):
     sauce_type_id: Mapped[int] = mapped_column(ForeignKey("sauce_types.id"))
     sauce_amt_id: Mapped[int] = mapped_column(ForeignKey("sauce_amts.id"))
 
+    product: Mapped[ProductModel] = relationship(
+        back_populates="product_customizations",
+    )
     toppings: Mapped[ToppingModel] = relationship(
         secondary=product_customization_toppings_table,
         back_populates="product_customizations",

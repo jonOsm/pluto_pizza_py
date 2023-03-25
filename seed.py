@@ -2,17 +2,18 @@ from sqlalchemy import delete
 from sqlalchemy.orm import Session
 from factory.alchemy import SQLAlchemyModelFactory
 from db.setup import get_db
-from db.factories.user_factory import UserFactory, UserModel
-from db.factories.product_factory import ProductFactory, ProductModel
 from db.models import (
     CheeseAmtModel,
     CheeseTypeModel,
     CrustThicknessModel,
     CrustTypeModel,
+    ProductCustomizationsModel,
+    ProductModel,
     SauceAmtModel,
     SauceTypeModel,
     ToppingModel,
     ToppingTypeModel,
+    UserModel,
 )
 
 
@@ -79,7 +80,21 @@ def seed_name_only(session: Session, model, names: list[str]):
 
 if __name__ == "__main__":
     print("Seeding DB...")
-    models = [UserModel, ProductModel, ToppingModel, ToppingTypeModel]
+    # WARNING: Order matters! Not all deletions cascade.
+    # TODO: Drop and recreate all tables instead?
+    models = [
+        UserModel,
+        ProductCustomizationsModel,
+        CrustTypeModel,
+        CrustThicknessModel,
+        CheeseTypeModel,
+        SauceTypeModel,
+        SauceAmtModel,
+        CheeseAmtModel,
+        ToppingModel,
+        ToppingTypeModel,
+        ProductModel,
+    ]
     session: Session = next(get_db())
 
     delete_all_records(session, models)
@@ -101,6 +116,9 @@ if __name__ == "__main__":
         ]
     )
     session.commit()
+
+    from db.factories.user_factory import UserFactory
+    from db.factories.product_factory import ProductFactory
 
     gen_entity(UserFactory, 50, "Users")
     gen_entity(ProductFactory, 50, "Products")
