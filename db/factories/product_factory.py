@@ -1,3 +1,4 @@
+from random import randint
 from factory import Faker, LazyAttribute, RelatedFactoryList
 from factory.alchemy import SQLAlchemyModelFactory
 from db.setup import scoped_session_local
@@ -8,12 +9,18 @@ from .product_customizations_factory import ProductCustomizationsFactory
 class ProductFactory(SQLAlchemyModelFactory):
     class Meta:
         model = ProductModel
-        exclude = ["_name_base", "_price_base"]
+        exclude = [
+            "_name_base",
+            "_price_base",
+            "_has_default_customization",
+            "false_once",
+        ]
         sqlalchemy_session = scoped_session_local
         sqlalchemy_session_persistence = "commit"
 
     _name_base = Faker("words", nb=2)
     _price_base = Faker("random_number", digits=4)
+    _has_default_customization = False
 
     name = LazyAttribute(lambda p: f"{' '.join(p._name_base)} pizza")
     base_price = LazyAttribute(lambda p: p._price_base / 100)
@@ -22,7 +29,7 @@ class ProductFactory(SQLAlchemyModelFactory):
     )
 
     product_customizations = RelatedFactoryList(
-        ProductCustomizationsFactory, "product", 10
+        ProductCustomizationsFactory, "product", lambda: randint(1, 10)
     )
 
     is_draft = Faker("boolean", chance_of_getting_true=10)

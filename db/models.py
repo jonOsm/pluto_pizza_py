@@ -42,6 +42,7 @@ class ProductModel(Base):
     stock: Mapped[int] = mapped_column(default=0)
     sku: Mapped[str] = mapped_column(String(50))
     image_url: Mapped[str]
+
     product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
         back_populates="product"
     )

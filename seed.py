@@ -1,4 +1,4 @@
-from sqlalchemy import delete
+from sqlalchemy import and_, delete, func, select, update
 from sqlalchemy.orm import Session
 from factory.alchemy import SQLAlchemyModelFactory
 from db.setup import get_db
@@ -78,6 +78,32 @@ def seed_name_only(session: Session, model, names: list[str]):
     session.commit()
 
 
+def set_default_customizations(session: Session):
+    subquery = (
+        select(
+            ProductCustomizationsModel.product_id,
+            func.max(ProductCustomizationsModel.created_at).label("max_created_at"),
+        )
+        .group_by(ProductCustomizationsModel.product_id)
+        .subquery()
+    )
+    stmt = select(ProductCustomizationsModel).join_from(
+        ProductCustomizationsModel,
+        subquery,
+        and_(
+            ProductCustomizationsModel.product_id == subquery.c.get("product_id"),
+            ProductCustomizationsModel.created_at == subquery.c.get("max_created_at"),
+        ),
+    )
+    default_customizations = session.scalars(stmt).all()
+    update_dict = [{"id": pc.id, "is_default": True} for pc in default_customizations]
+    session.execute(
+        update(ProductCustomizationsModel),
+        update_dict,
+    )
+    session.commit()
+
+
 if __name__ == "__main__":
     print("Seeding DB...")
     # WARNING: Order matters! Not all deletions cascade.
@@ -122,7 +148,7 @@ if __name__ == "__main__":
 
     gen_entity(UserFactory, 50, "Users")
     gen_entity(ProductFactory, 50, "Products")
-
+    set_default_customizations(session)
     print("Seeding DB complete.")
 
     session.close()

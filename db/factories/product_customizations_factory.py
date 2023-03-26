@@ -3,7 +3,7 @@ from factory.alchemy import SQLAlchemyModelFactory
 from db.setup import scoped_session_local
 from db.models import ProductCustomizationsModel
 from db.pre_seed import (
-    toppings,
+    get_toppings,
     crust_types,
     crust_thicknesses,
     cheese_amts,
@@ -16,7 +16,6 @@ from db.pre_seed import (
 class ProductCustomizationsFactory(SQLAlchemyModelFactory):
     class Meta:
         model = ProductCustomizationsModel
-        exclude = ["_crusts"]
         sqlalchemy_session = scoped_session_local
         sqlalchemy_session_persistence = "commit"
 
@@ -30,10 +29,7 @@ class ProductCustomizationsFactory(SQLAlchemyModelFactory):
     sauce_type_id = Faker("random_element", elements=[st.id for st in sauce_types])
     sauce_amt_id = Faker("random_element", elements=[sa.id for sa in sauce_amts])
     toppings = Faker(
-        "random_elements", elements=list(toppings(scoped_session_local)), unique=True
+        "random_elements",
+        elements=list(get_toppings(scoped_session_local)),
+        unique=True,
     )
-
-    # @factory.post_generation
-    # def toppings(obj, create, extracted, **kwargs):
-    #     num_toppings = randint(0,6)
-    #     random_toppings = choices(toppings, k=num_toppings)

@@ -16,7 +16,7 @@ session = next(get_db())
 # for orm to work properly -
 # TODO: improve efficiency since this read runs for every product cutomization
 
-toppings = lambda session: read_all_secondary_customization(session, ToppingModel)
+get_toppings = lambda session: read_all_secondary_customization(session, ToppingModel)
 crust_types = read_all_secondary_customization(session, CrustTypeModel)
 crust_thicknesses = read_all_secondary_customization(session, CrustThicknessModel)
 cheese_types = read_all_secondary_customization(session, CheeseTypeModel)
