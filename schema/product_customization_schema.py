@@ -59,6 +59,8 @@ class ProductCustomizationDefault(BaseModel):
     crust_thickness: CrustThickness
     cheese_type: CheeseType
     cheese_amt: CheeseAmt
+    sauce_type: SauceType
+    sauce_amt: SauceAmt
 
     class Config:
         orm_mode = True
