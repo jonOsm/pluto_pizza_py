@@ -1,7 +1,16 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from api.crud.toppings_crud import read_toppings
 
-from db.models import ProductCustomizationsModel
+from db.models import (
+    ProductCustomizationsModel,
+    CrustTypeModel,
+    CrustThicknessModel,
+    CheeseAmtModel,
+    CheeseTypeModel,
+    SauceAmtModel,
+    SauceTypeModel,
+)
 
 
 def read_all_secondary_customization(db: Session, model: any):
@@ -21,3 +30,22 @@ def read_product_customization(
         base_stmt = base_stmt.where(ProductCustomizationsModel.is_default == True)
 
     return db.scalars(base_stmt).first()
+
+
+def read_product_customization_options(db: Session):
+    customization_option_models = {
+        "crust_types": CrustTypeModel,
+        "crust_thicknesses": CrustThicknessModel,
+        "cheese_amts": CheeseAmtModel,
+        "cheese_types": CheeseTypeModel,
+        "sauce_amts": SauceAmtModel,
+        "sauce_types": SauceTypeModel,
+    }
+
+    customization_option_values = {
+        option: read_all_secondary_customization(db, model)
+        for (option, model) in customization_option_models.items()
+    }
+
+    customization_option_values["toppings"] = read_toppings(db)
+    return customization_option_values

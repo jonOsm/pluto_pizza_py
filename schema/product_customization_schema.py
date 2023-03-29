@@ -2,53 +2,40 @@ from pydantic import BaseModel
 from .toppings_schema import Topping
 
 
+class BaseProductCustomizationField(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
 class CrustType(BaseModel):
-    id: int
-    name: str
-
-    class Config:
-        orm_mode = True
+    pass
 
 
-class CrustThickness(BaseModel):
-    id: int
-    name: str
-
-    class Config:
-        orm_mode = True
+class CrustThickness(BaseProductCustomizationField):
+    pass
 
 
-class CheeseType(BaseModel):
-    id: int
-    name: str
-
-    class Config:
-        orm_mode = True
+class CheeseType(BaseProductCustomizationField):
+    pass
 
 
-class CheeseAmt(BaseModel):
-    id: int
-    name: str
+class CheeseAmt(BaseProductCustomizationField):
     base_price: float
 
-    class Config:
-        orm_mode = True
+
+class SauceType(BaseProductCustomizationField):
+    pass
 
 
-class SauceType(BaseModel):
-    id: int
-    name: str
-
-    class Config:
-        orm_mode = True
+class SauceAmt(BaseProductCustomizationField):
+    pass
 
 
-class SauceAmt(BaseModel):
-    id: int
-    name: str
-
-    class Config:
-        orm_mode = True
+class ProductSize(BaseProductCustomizationField):
+    pass
 
 
 class ProductCustomizationDefault(BaseModel):
@@ -64,3 +51,13 @@ class ProductCustomizationDefault(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class ProductCustomizationOptions(BaseModel):
+    toppings: list[Topping]
+    crust_types: list[CrustType]
+    crust_thicknesses: list[CrustThickness]
+    cheese_amts: list[CheeseAmt]
+    cheese_types: list[CheeseType]
+    sauce_amts: list[SauceAmt]
+    sauce_types: list[SauceType]

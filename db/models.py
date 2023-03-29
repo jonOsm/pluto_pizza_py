@@ -37,7 +37,7 @@ class ProductModel(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
     base_price: Mapped[float]
-    base_size: Mapped[str]
+    # base_size: Mapped[str]
     is_draft: Mapped[bool] = mapped_column(default=True)
     stock: Mapped[int] = mapped_column(default=0)
     sku: Mapped[str] = mapped_column(String(50))
@@ -146,6 +146,17 @@ class SauceAmtModel(Base):
     )
 
 
+class ProductSizeModel(Base):
+    __tablename__ = "product_sizes"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    base_price: Mapped[float]
+
+    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
+        back_populates="product_size"
+    )
+
+
 class ProductCustomizationsModel(Base):
     __tablename__ = "product_customizations"
 
@@ -154,12 +165,14 @@ class ProductCustomizationsModel(Base):
     product_id: Mapped[int] = mapped_column(
         ForeignKey("products.id", ondelete="CASCADE")
     )
+
     crust_type_id: Mapped[int] = mapped_column(ForeignKey("crust_types.id"))
     crust_thickness_id: Mapped[int] = mapped_column(ForeignKey("crust_thicknesses.id"))
     cheese_type_id: Mapped[int] = mapped_column(ForeignKey("cheese_types.id"))
     cheese_amt_id: Mapped[int] = mapped_column(ForeignKey("cheese_amts.id"))
     sauce_type_id: Mapped[int] = mapped_column(ForeignKey("sauce_types.id"))
     sauce_amt_id: Mapped[int] = mapped_column(ForeignKey("sauce_amts.id"))
+    product_size_id: Mapped[int] = mapped_column(ForeignKey("product_sizes.id"))
 
     product: Mapped[ProductModel] = relationship(
         back_populates="product_customizations",
@@ -184,5 +197,8 @@ class ProductCustomizationsModel(Base):
         back_populates="product_customizations"
     )
     sauce_amt: Mapped[SauceAmtModel] = relationship(
+        back_populates="product_customizations"
+    )
+    product_size: Mapped[ProductSizeModel] = relationship(
         back_populates="product_customizations"
     )

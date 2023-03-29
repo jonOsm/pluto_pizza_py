@@ -24,9 +24,9 @@ class ProductFactory(SQLAlchemyModelFactory):
 
     name = LazyAttribute(lambda p: f"{' '.join(p._name_base)} pizza")
     base_price = LazyAttribute(lambda p: p._price_base / 100)
-    base_size = Faker(
-        "random_element", elements=["small", "medium", "large", "xl", "party"]
-    )
+    # base_size = Faker(
+    #     "random_element", elements=["small", "medium", "large", "xl", "party"]
+    # )
 
     product_customizations = RelatedFactoryList(
         ProductCustomizationsFactory, "product", lambda: randint(1, 10)

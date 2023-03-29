@@ -11,6 +11,7 @@ from db.models import (
     ProductModel,
     SauceAmtModel,
     SauceTypeModel,
+    ProductSizeModel,
     ToppingModel,
     ToppingTypeModel,
     UserModel,
@@ -133,6 +134,16 @@ if __name__ == "__main__":
     seed_name_only(session, CheeseTypeModel, ["mozzarella", "four cheese blend"])
     seed_name_only(session, SauceTypeModel, ["classic tomato", "pesto", "bbq"])
     seed_name_only(session, SauceAmtModel, ["less", "normal", "extra"])
+
+    session.add_all(
+        [
+            ProductSizeModel(name="small", base_price=8.99),
+            ProductSizeModel(name="medium", base_price=9.99),
+            ProductSizeModel(name="large", base_price=10.99),
+            ProductSizeModel(name="xl", base_price=13.99),
+            ProductSizeModel(name="party", base_price=15.99),
+        ]
+    )
 
     session.add_all(
         [

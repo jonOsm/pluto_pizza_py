@@ -4,6 +4,7 @@ from db.models import (
     CheeseTypeModel,
     CrustThicknessModel,
     CrustTypeModel,
+    ProductSizeModel,
     SauceAmtModel,
     SauceTypeModel,
     ToppingModel,
@@ -23,4 +24,5 @@ cheese_types = read_all_secondary_customization(session, CheeseTypeModel)
 cheese_amts = read_all_secondary_customization(session, CheeseAmtModel)
 sauce_types = read_all_secondary_customization(session, SauceTypeModel)
 sauce_amts = read_all_secondary_customization(session, SauceAmtModel)
+product_sizes = read_all_secondary_customization(session, ProductSizeModel)
 session.close()

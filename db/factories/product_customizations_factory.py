@@ -10,6 +10,7 @@ from db.pre_seed import (
     cheese_types,
     sauce_amts,
     sauce_types,
+    product_sizes,
 )
 
 
@@ -28,6 +29,7 @@ class ProductCustomizationsFactory(SQLAlchemyModelFactory):
     cheese_amt_id = Faker("random_element", elements=[ca.id for ca in cheese_amts])
     sauce_type_id = Faker("random_element", elements=[st.id for st in sauce_types])
     sauce_amt_id = Faker("random_element", elements=[sa.id for sa in sauce_amts])
+    product_size_id = Faker("random_element", elements=[ps.id for ps in product_sizes])
     toppings = Faker(
         "random_elements",
         elements=list(get_toppings(scoped_session_local)),
