@@ -10,7 +10,7 @@ class BaseProductCustomizationField(BaseModel):
         orm_mode = True
 
 
-class CrustType(BaseModel):
+class CrustType(BaseProductCustomizationField):
     pass
 
 
@@ -38,10 +38,15 @@ class ProductSize(BaseProductCustomizationField):
     pass
 
 
+class ProductCustomizationEssential(BaseModel):
+    product_size: ProductSize
+
+
 class ProductCustomizationDefault(BaseModel):
     id: int
     is_default: bool
     toppings: list[Topping]
+    product_size: ProductSize
     crust_type: CrustType
     crust_thickness: CrustThickness
     cheese_type: CheeseType

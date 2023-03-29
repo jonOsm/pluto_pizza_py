@@ -1,6 +1,10 @@
 from pydantic import BaseModel
 
-from schema.product_customization_schema import ProductSize
+from schema.product_customization_schema import (
+    ProductCustomizationDefault,
+    ProductCustomizationEssential,
+    ProductSize,
+)
 
 
 class Product(BaseModel):
@@ -17,7 +21,7 @@ class Product(BaseModel):
 
 
 class ProductWithEssentialCustomization(Product):
-    product_size_name: str
+    product_size: ProductSize
 
     class Config:
         orm_mode = True
