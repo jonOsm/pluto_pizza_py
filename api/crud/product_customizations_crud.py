@@ -10,6 +10,7 @@ from db.models import (
     CheeseTypeModel,
     SauceAmtModel,
     SauceTypeModel,
+    ProductSizeModel,
 )
 
 
@@ -27,7 +28,9 @@ def read_product_customization(
     )
 
     if defaults_only:
-        base_stmt = base_stmt.where(ProductCustomizationsModel.is_default == True)
+        base_stmt = base_stmt.where(
+            ProductCustomizationsModel.is_default == True
+        )
 
     return db.scalars(base_stmt).first()
 
@@ -40,6 +43,7 @@ def read_product_customization_options(db: Session):
         "cheese_type": CheeseTypeModel,
         "sauce_amt": SauceAmtModel,
         "sauce_type": SauceTypeModel,
+        "product_size": ProductSizeModel,
     }
 
     customization_option_values = {
@@ -47,5 +51,13 @@ def read_product_customization_options(db: Session):
         for (option, model) in customization_option_models.items()
     }
 
-    customization_option_values["toppings"] = read_toppings(db)
+    # TODO: Consideration - fragile implementation
+    # if the user adds a new topping type, it won't be included unless we update the list below
+    # also, doing two queries when we could filter here instead
+    customization_option_values["toppings"] = read_toppings(
+        db, ["vegetables", "meat"]
+    )
+    customization_option_values["additional_toppings"] = read_toppings(
+        db, ["other"]
+    )
     return customization_option_values

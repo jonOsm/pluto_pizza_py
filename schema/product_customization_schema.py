@@ -62,6 +62,7 @@ class ProductCustomizationOptions(BaseModel):
     # would normally pluralize names but not doing so
     # simplifies FE logic
     toppings: list[Topping]
+    additional_toppings: list[Topping]
     product_size: list[ProductSize]
     crust_type: list[CrustType]
     crust_thickness: list[CrustThickness]
