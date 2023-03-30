@@ -34,12 +34,12 @@ def read_product_customization(
 
 def read_product_customization_options(db: Session):
     customization_option_models = {
-        "crust_types": CrustTypeModel,
-        "crust_thicknesses": CrustThicknessModel,
-        "cheese_amts": CheeseAmtModel,
-        "cheese_types": CheeseTypeModel,
-        "sauce_amts": SauceAmtModel,
-        "sauce_types": SauceTypeModel,
+        "crust_type": CrustTypeModel,
+        "crust_thickness": CrustThicknessModel,
+        "cheese_amt": CheeseAmtModel,
+        "cheese_type": CheeseTypeModel,
+        "sauce_amt": SauceAmtModel,
+        "sauce_type": SauceTypeModel,
     }
 
     customization_option_values = {

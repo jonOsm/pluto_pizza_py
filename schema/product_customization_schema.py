@@ -59,10 +59,13 @@ class ProductCustomizationDefault(BaseModel):
 
 
 class ProductCustomizationOptions(BaseModel):
+    # would normally pluralize names but not doing so
+    # simplifies FE logic
     toppings: list[Topping]
-    crust_types: list[CrustType]
-    crust_thicknesses: list[CrustThickness]
-    cheese_amts: list[CheeseAmt]
-    cheese_types: list[CheeseType]
-    sauce_amts: list[SauceAmt]
-    sauce_types: list[SauceType]
+    product_size: list[ProductSize]
+    crust_type: list[CrustType]
+    crust_thickness: list[CrustThickness]
+    cheese_amt: list[CheeseAmt]
+    cheese_type: list[CheeseType]
+    sauce_amt: list[SauceAmt]
+    sauce_type: list[SauceType]

@@ -20,8 +20,8 @@ router = APIRouter(prefix="/products", tags=["products"])
 @router.get("/")
 async def index(
     db: Session = Depends(get_db),
-) -> list[ProductWithEssentialCustomization]:
-    return read_products(db)
+) -> Page[ProductWithEssentialCustomization]:
+    return paginate(read_products(db))
 
 
 @router.get("/{product_id}/customization/default")

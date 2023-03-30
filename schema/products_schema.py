@@ -1,8 +1,6 @@
 from pydantic import BaseModel
 
 from schema.product_customization_schema import (
-    ProductCustomizationDefault,
-    ProductCustomizationEssential,
     ProductSize,
 )
 
