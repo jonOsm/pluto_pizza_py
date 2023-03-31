@@ -119,6 +119,7 @@ if __name__ == "__main__":
         SauceAmtModel,
         CheeseAmtModel,
         ToppingModel,
+        ProductSizeModel,
         ToppingTypeModel,
         ProductModel,
     ]
