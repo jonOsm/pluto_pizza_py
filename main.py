@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi_pagination import add_pagination
 from api import auth
-from api.routers import users, products, addresses, toppings
+from api.routers import users, products, addresses, toppings, carts
 
 app = FastAPI()
 
@@ -27,6 +27,7 @@ app.include_router(users.router)
 app.include_router(products.router)
 app.include_router(addresses.router)
 app.include_router(toppings.router)
+app.include_router(carts.router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 

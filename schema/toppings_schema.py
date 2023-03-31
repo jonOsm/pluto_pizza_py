@@ -18,6 +18,13 @@ class BaseTopping(BaseModel):
     topping_type: ToppingType
 
 
+class ToppingIn(BaseModel):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
 class Topping(BaseTopping):
     id: int
 

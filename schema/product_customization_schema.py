@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from .toppings_schema import Topping
+from .toppings_schema import Topping, ToppingIn
 
 
 class BaseProductCustomizationField(BaseModel):
@@ -53,6 +53,21 @@ class ProductCustomizationDefault(BaseModel):
     cheese_amt: CheeseAmt
     sauce_type: SauceType
     sauce_amt: SauceAmt
+
+    class Config:
+        orm_mode = True
+
+
+class ProductCustomizationIn(BaseModel):
+    toppings: list[ToppingIn]
+    product_id: int
+    product_size_id: int
+    crust_type_id: int
+    crust_thickness_id: int
+    cheese_type_id: int
+    cheese_amt_id: int
+    sauce_type_id: int
+    sauce_amt_id: int
 
     class Config:
         orm_mode = True
