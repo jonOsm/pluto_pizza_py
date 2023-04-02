@@ -42,6 +42,22 @@ class ProductCustomizationEssential(BaseModel):
     product_size: ProductSize
 
 
+# TODO: Create base class for ProductCustomization schemas
+class ProductCustomizationIntermediary(BaseModel):
+    id: int
+    is_default: bool
+    product_size: ProductSize
+    crust_type: CrustType
+    crust_thickness: CrustThickness
+    cheese_type: CheeseType
+    cheese_amt: CheeseAmt
+    sauce_type: SauceType
+    sauce_amt: SauceAmt
+
+    class Config:
+        orm_mode = True
+
+
 class ProductCustomizationDefault(BaseModel):
     id: int
     is_default: bool

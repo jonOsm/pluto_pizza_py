@@ -6,9 +6,10 @@ from schema.product_customization_schema import (
     ProductCustomizationDefault,
     ProductCustomizationOptions,
 )
+
 from api.crud.products_crud import read_products
 from api.crud.product_customizations_crud import (
-    read_product_customization,
+    read_default_product_customization,
     read_product_customization_options,
 )
 from fastapi_pagination import Page
@@ -28,7 +29,14 @@ async def index(
 async def default_product_customization(
     product_id: int, db: Session = Depends(get_db)
 ) -> ProductCustomizationDefault:
-    return read_product_customization(db, product_id)
+    prod_cust_record = read_default_product_customization(db, product_id)
+    toppings = [
+        topping_record.topping for topping_record in prod_cust_record.toppings
+    ]
+    del prod_cust_record.toppings
+    return ProductCustomizationDefault(
+        **prod_cust_record.__dict__, toppings=toppings
+    )
 
 
 @router.get("/customization/options")

@@ -15,6 +15,14 @@ class CartItemIn(CartItem):
     pass
 
 
+class CartItemOut(BaseModel):
+    id: int
+    cart_id: int
+
+    class Config:
+        orm_mode = True
+
+
 class Cart(BaseModel):
     id: int
     user_id: int | None

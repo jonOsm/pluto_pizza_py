@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, desc
 from sqlalchemy.orm import Session
 from api.crud.toppings_crud import read_toppings
 
@@ -20,17 +20,18 @@ def read_all_secondary_customization(db: Session, model: any):
     return db.scalars(stmt).all()
 
 
-def read_product_customization(
-    db: Session, product_id: int, defaults_only: bool = True
+def read_default_product_customization(
+    db: Session,
+    product_id: int,
 ):
-    base_stmt = select(ProductCustomizationsModel).where(
-        ProductCustomizationsModel.product_id == product_id
+    stmt = (
+        select(ProductCustomizationsModel)
+        .where(ProductCustomizationsModel.product_id == product_id)
+        .where(ProductCustomizationsModel.is_default)
+        .order_by(desc(ProductCustomizationsModel.created_at))
     )
 
-    if defaults_only:
-        base_stmt = base_stmt.where(ProductCustomizationsModel.is_default)
-
-    return db.scalars(base_stmt).first()
+    return db.scalar(stmt)
 
 
 def read_product_customization_options(db: Session):
@@ -52,6 +53,11 @@ def read_product_customization_options(db: Session):
     # TODO: Consideration - fragile implementation
     # if the user adds a new topping type, it won't be included unless we update the list below
     # also, doing two queries when we could filter here instead
-    customization_option_values["toppings"] = read_toppings(db, ["vegetables", "meat"])
-    customization_option_values["additional_toppings"] = read_toppings(db, ["other"])
+    # Solution: new column on topping types? 'main_topping' and 'additional' could be values
+    customization_option_values["toppings"] = read_toppings(
+        db, ["vegetables", "meat"]
+    )
+    customization_option_values["additional_toppings"] = read_toppings(
+        db, ["other"]
+    )
     return customization_option_values

@@ -38,15 +38,14 @@ class ProductModel(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
     base_price: Mapped[float]
-    # base_size: Mapped[str]
     is_draft: Mapped[bool] = mapped_column(default=True)
     stock: Mapped[int] = mapped_column(default=0)
     sku: Mapped[str] = mapped_column(String(50))
     image_url: Mapped[str]
 
-    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
-        back_populates="product"
-    )
+    product_customizations: Mapped[
+        list["ProductCustomizationsModel"]
+    ] = relationship(back_populates="product")
 
 
 class AddressModel(Base):
@@ -77,7 +76,9 @@ class ToppingModel(Base):
     base_price: Mapped[float] = mapped_column()
     # debating whether this should be computed based on price
     # is_premium: Mapped[bool]
-    topping_type: Mapped["ToppingTypeModel"] = relationship(back_populates="toppings")
+    topping_type: Mapped["ToppingTypeModel"] = relationship(
+        back_populates="toppings"
+    )
     product_customizations: Mapped[
         list["ProductCustomizationToppingsModel"]
     ] = relationship(back_populates="topping")
@@ -96,27 +97,27 @@ class CrustTypeModel(Base):
     __tablename__ = "crust_types"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
-    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
-        back_populates="crust_type"
-    )
+    product_customizations: Mapped[
+        list["ProductCustomizationsModel"]
+    ] = relationship(back_populates="crust_type")
 
 
 class CrustThicknessModel(Base):
     __tablename__ = "crust_thicknesses"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
-    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
-        back_populates="crust_thickness"
-    )
+    product_customizations: Mapped[
+        list["ProductCustomizationsModel"]
+    ] = relationship(back_populates="crust_thickness")
 
 
 class CheeseTypeModel(Base):
     __tablename__ = "cheese_types"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
-    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
-        back_populates="cheese_type"
-    )
+    product_customizations: Mapped[
+        list["ProductCustomizationsModel"]
+    ] = relationship(back_populates="cheese_type")
 
 
 class CheeseAmtModel(Base):
@@ -124,27 +125,27 @@ class CheeseAmtModel(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
     base_price: Mapped[float]
-    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
-        back_populates="cheese_amt"
-    )
+    product_customizations: Mapped[
+        list["ProductCustomizationsModel"]
+    ] = relationship(back_populates="cheese_amt")
 
 
 class SauceTypeModel(Base):
     __tablename__ = "sauce_types"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
-    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
-        back_populates="sauce_type"
-    )
+    product_customizations: Mapped[
+        list["ProductCustomizationsModel"]
+    ] = relationship(back_populates="sauce_type")
 
 
 class SauceAmtModel(Base):
     __tablename__ = "sauce_amts"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
-    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
-        back_populates="sauce_amt"
-    )
+    product_customizations: Mapped[
+        list["ProductCustomizationsModel"]
+    ] = relationship(back_populates="sauce_amt")
 
 
 class ProductSizeModel(Base):
@@ -153,9 +154,9 @@ class ProductSizeModel(Base):
     name: Mapped[str]
     base_price: Mapped[float]
 
-    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
-        back_populates="product_size"
-    )
+    product_customizations: Mapped[
+        list["ProductCustomizationsModel"]
+    ] = relationship(back_populates="product_size")
 
 
 class ProductCustomizationsModel(Base):
@@ -168,7 +169,9 @@ class ProductCustomizationsModel(Base):
     )
 
     crust_type_id: Mapped[int] = mapped_column(ForeignKey("crust_types.id"))
-    crust_thickness_id: Mapped[int] = mapped_column(ForeignKey("crust_thicknesses.id"))
+    crust_thickness_id: Mapped[int] = mapped_column(
+        ForeignKey("crust_thicknesses.id")
+    )
     cheese_type_id: Mapped[int] = mapped_column(ForeignKey("cheese_types.id"))
     cheese_amt_id: Mapped[int] = mapped_column(ForeignKey("cheese_amts.id"))
     sauce_type_id: Mapped[int] = mapped_column(ForeignKey("sauce_types.id"))
@@ -183,41 +186,47 @@ class ProductCustomizationsModel(Base):
         back_populates="product_customization"
     )
 
-    toppings: AssociationProxy[list[ToppingModel]] = association_proxy(
-        "customization_toppings_association",
-        "topping",
-        creator=lambda topping: ProductCustomizationToppingsModel(topping=topping),
+    # TODO: Revisit proxying
+    # toppings_with_details: AssociationProxy[
+    #     list["ToppingModel"]
+    # ] = association_proxy(
+    #     "toppings",
+    #     "topping",
+    #     creator=lambda topping: ToppingModel(name="testing"),
+    # )
+
+    toppings: Mapped[list["ProductCustomizationToppingsModel"]] = relationship(
+        back_populates="product_customization"
     )
-    customization_toppings_association: Mapped[
-        list["ProductCustomizationToppingsModel"]
-    ] = relationship(back_populates="product_customization")
     crust_type: Mapped[CrustTypeModel] = relationship(
-        back_populates="product_customizations"
+        back_populates="product_customizations", lazy="joined"
     )
     crust_thickness: Mapped[CrustThicknessModel] = relationship(
-        back_populates="product_customizations"
+        back_populates="product_customizations", lazy="joined"
     )
     cheese_type: Mapped[CheeseTypeModel] = relationship(
-        back_populates="product_customizations"
+        back_populates="product_customizations", lazy="joined"
     )
     cheese_amt: Mapped[CheeseAmtModel] = relationship(
-        back_populates="product_customizations"
+        back_populates="product_customizations", lazy="joined"
     )
     sauce_type: Mapped[SauceTypeModel] = relationship(
-        back_populates="product_customizations"
+        back_populates="product_customizations", lazy="joined"
     )
     sauce_amt: Mapped[SauceAmtModel] = relationship(
-        back_populates="product_customizations"
+        back_populates="product_customizations", lazy="joined"
     )
     product_size: Mapped[ProductSizeModel] = relationship(
-        back_populates="product_customizations"
+        back_populates="product_customizations", lazy="joined"
     )
 
 
 class ProductCustomizationToppingsModel(Base):
     __tablename__ = "product_customization_toppings"
 
-    topping_id: Mapped[int] = mapped_column(ForeignKey("toppings.id"), primary_key=True)
+    topping_id: Mapped[int] = mapped_column(
+        ForeignKey("toppings.id"), primary_key=True
+    )
     product_customization_id: Mapped[int] = mapped_column(
         ForeignKey("product_customizations.id"), primary_key=True
     )
@@ -225,7 +234,9 @@ class ProductCustomizationToppingsModel(Base):
     topping: Mapped["ToppingModel"] = relationship(
         back_populates="product_customizations"
     )
-    product_customization: Mapped["ProductCustomizationsModel"] = relationship()
+    product_customization: Mapped["ProductCustomizationsModel"] = relationship(
+        back_populates="toppings"
+    )
 
 
 class CartItemModel(Base):
@@ -250,7 +261,9 @@ class CartModel(Base):
     user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     anon_token: Mapped[str | None]
 
-    cart_items: Mapped[list[CartItemModel]] = relationship(back_populates="cart")
+    cart_items: Mapped[list[CartItemModel]] = relationship(
+        back_populates="cart"
+    )
 
     is_active: Mapped[bool]
     user: Mapped[UserModel | None] = relationship(back_populates="carts")
