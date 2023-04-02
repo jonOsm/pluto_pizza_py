@@ -1,7 +1,7 @@
 from db.setup import Base
+from sqlalchemy.ext.associationproxy import AssociationProxy, association_proxy
 from sqlalchemy import Boolean, ForeignKey, String, Table, sql
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from .association_tables import product_customization_toppings_table
 
 # Necessary for sqlite to handle altering constraints:
 # https://stackoverflow.com/a/62651160
@@ -44,9 +44,9 @@ class ProductModel(Base):
     sku: Mapped[str] = mapped_column(String(50))
     image_url: Mapped[str]
 
-    product_customizations: Mapped[
-        list["ProductCustomizationsModel"]
-    ] = relationship(back_populates="product")
+    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
+        back_populates="product"
+    )
 
 
 class AddressModel(Base):
@@ -77,15 +77,10 @@ class ToppingModel(Base):
     base_price: Mapped[float] = mapped_column()
     # debating whether this should be computed based on price
     # is_premium: Mapped[bool]
-    topping_type: Mapped["ToppingTypeModel"] = relationship(
-        back_populates="toppings"
-    )
+    topping_type: Mapped["ToppingTypeModel"] = relationship(back_populates="toppings")
     product_customizations: Mapped[
-        list["ProductCustomizationsModel"]
-    ] = relationship(
-        secondary=product_customization_toppings_table,
-        back_populates="toppings",
-    )
+        list["ProductCustomizationToppingsModel"]
+    ] = relationship(back_populates="topping")
 
 
 class ToppingTypeModel(Base):
@@ -101,27 +96,27 @@ class CrustTypeModel(Base):
     __tablename__ = "crust_types"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
-    product_customizations: Mapped[
-        list["ProductCustomizationsModel"]
-    ] = relationship(back_populates="crust_type")
+    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
+        back_populates="crust_type"
+    )
 
 
 class CrustThicknessModel(Base):
     __tablename__ = "crust_thicknesses"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
-    product_customizations: Mapped[
-        list["ProductCustomizationsModel"]
-    ] = relationship(back_populates="crust_thickness")
+    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
+        back_populates="crust_thickness"
+    )
 
 
 class CheeseTypeModel(Base):
     __tablename__ = "cheese_types"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
-    product_customizations: Mapped[
-        list["ProductCustomizationsModel"]
-    ] = relationship(back_populates="cheese_type")
+    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
+        back_populates="cheese_type"
+    )
 
 
 class CheeseAmtModel(Base):
@@ -129,27 +124,27 @@ class CheeseAmtModel(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
     base_price: Mapped[float]
-    product_customizations: Mapped[
-        list["ProductCustomizationsModel"]
-    ] = relationship(back_populates="cheese_amt")
+    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
+        back_populates="cheese_amt"
+    )
 
 
 class SauceTypeModel(Base):
     __tablename__ = "sauce_types"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
-    product_customizations: Mapped[
-        list["ProductCustomizationsModel"]
-    ] = relationship(back_populates="sauce_type")
+    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
+        back_populates="sauce_type"
+    )
 
 
 class SauceAmtModel(Base):
     __tablename__ = "sauce_amts"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
-    product_customizations: Mapped[
-        list["ProductCustomizationsModel"]
-    ] = relationship(back_populates="sauce_amt")
+    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
+        back_populates="sauce_amt"
+    )
 
 
 class ProductSizeModel(Base):
@@ -158,9 +153,9 @@ class ProductSizeModel(Base):
     name: Mapped[str]
     base_price: Mapped[float]
 
-    product_customizations: Mapped[
-        list["ProductCustomizationsModel"]
-    ] = relationship(back_populates="product_size")
+    product_customizations: Mapped[list["ProductCustomizationsModel"]] = relationship(
+        back_populates="product_size"
+    )
 
 
 class ProductCustomizationsModel(Base):
@@ -173,9 +168,7 @@ class ProductCustomizationsModel(Base):
     )
 
     crust_type_id: Mapped[int] = mapped_column(ForeignKey("crust_types.id"))
-    crust_thickness_id: Mapped[int] = mapped_column(
-        ForeignKey("crust_thicknesses.id")
-    )
+    crust_thickness_id: Mapped[int] = mapped_column(ForeignKey("crust_thicknesses.id"))
     cheese_type_id: Mapped[int] = mapped_column(ForeignKey("cheese_types.id"))
     cheese_amt_id: Mapped[int] = mapped_column(ForeignKey("cheese_amts.id"))
     sauce_type_id: Mapped[int] = mapped_column(ForeignKey("sauce_types.id"))
@@ -189,10 +182,15 @@ class ProductCustomizationsModel(Base):
     cart_item: Mapped["CartItemModel"] = relationship(
         back_populates="product_customization"
     )
-    toppings: Mapped[ToppingModel] = relationship(
-        secondary=product_customization_toppings_table,
-        back_populates="product_customizations",
+
+    toppings: AssociationProxy[list[ToppingModel]] = association_proxy(
+        "customization_toppings_association",
+        "topping",
+        creator=lambda topping: ProductCustomizationToppingsModel(topping=topping),
     )
+    customization_toppings_association: Mapped[
+        list["ProductCustomizationToppingsModel"]
+    ] = relationship(back_populates="product_customization")
     crust_type: Mapped[CrustTypeModel] = relationship(
         back_populates="product_customizations"
     )
@@ -214,6 +212,20 @@ class ProductCustomizationsModel(Base):
     product_size: Mapped[ProductSizeModel] = relationship(
         back_populates="product_customizations"
     )
+
+
+class ProductCustomizationToppingsModel(Base):
+    __tablename__ = "product_customization_toppings"
+
+    topping_id: Mapped[int] = mapped_column(ForeignKey("toppings.id"), primary_key=True)
+    product_customization_id: Mapped[int] = mapped_column(
+        ForeignKey("product_customizations.id"), primary_key=True
+    )
+
+    topping: Mapped["ToppingModel"] = relationship(
+        back_populates="product_customizations"
+    )
+    product_customization: Mapped["ProductCustomizationsModel"] = relationship()
 
 
 class CartItemModel(Base):
@@ -238,9 +250,8 @@ class CartModel(Base):
     user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     anon_token: Mapped[str | None]
 
-    cart_items: Mapped[list[CartItemModel]] = relationship(
-        back_populates="cart"
-    )
+    cart_items: Mapped[list[CartItemModel]] = relationship(back_populates="cart")
+
     is_active: Mapped[bool]
     user: Mapped[UserModel | None] = relationship(back_populates="carts")
     # tax_id # TODO: include regional taxes in price calculation

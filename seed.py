@@ -7,6 +7,7 @@ from db.models import (
     CheeseTypeModel,
     CrustThicknessModel,
     CrustTypeModel,
+    ProductCustomizationToppingsModel,
     ProductCustomizationsModel,
     ProductModel,
     SauceAmtModel,
@@ -111,6 +112,7 @@ if __name__ == "__main__":
     # TODO: Drop and recreate all tables instead?
     models = [
         UserModel,
+        ProductCustomizationToppingsModel,
         ProductCustomizationsModel,
         CrustTypeModel,
         CrustThicknessModel,

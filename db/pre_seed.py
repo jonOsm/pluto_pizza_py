@@ -1,4 +1,5 @@
 from api.crud.product_customizations_crud import read_all_secondary_customization
+from sqlalchemy.orm import Session
 from db.models import (
     CheeseAmtModel,
     CheeseTypeModel,
@@ -7,6 +8,7 @@ from db.models import (
     ProductSizeModel,
     SauceAmtModel,
     SauceTypeModel,
+    ProductCustomizationToppingsModel,
     ToppingModel,
 )
 from db.setup import get_db

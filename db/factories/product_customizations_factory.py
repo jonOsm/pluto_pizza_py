@@ -1,7 +1,7 @@
-from factory import Faker, LazyAttribute
+from factory import Faker, post_generation
 from factory.alchemy import SQLAlchemyModelFactory
 from db.setup import scoped_session_local
-from db.models import ProductCustomizationsModel
+from db.models import ProductCustomizationToppingsModel, ProductCustomizationsModel
 from random import choices, randint
 from db.pre_seed import (
     get_toppings,
@@ -31,11 +31,16 @@ class ProductCustomizationsFactory(SQLAlchemyModelFactory):
     sauce_type_id = Faker("random_element", elements=[st.id for st in sauce_types])
     sauce_amt_id = Faker("random_element", elements=[sa.id for sa in sauce_amts])
     product_size_id = Faker("random_element", elements=[ps.id for ps in product_sizes])
-    # toppings = LazyAttribute(
-    #     lambda _: choices(list(get_toppings(scoped_session_local)), k=randint(0, 3))
-    # )
-    toppings = Faker(
-        "random_elements",
-        elements=list(get_toppings(scoped_session_local)),
-        unique=True,
-    )
+
+    @post_generation
+    def generate_toppings(obj, create, extracted, **kwargs):
+        toppings = get_toppings(scoped_session_local)
+        chosen_toppings = set(choices(toppings, k=randint(1, len(toppings) // 3)))
+        customization_toppings = [
+            ProductCustomizationToppingsModel(
+                topping_id=topping.id, product_customization_id=obj.id
+            )
+            for topping in chosen_toppings
+        ]
+        scoped_session_local.add_all(customization_toppings)
+        scoped_session_local.commit()
