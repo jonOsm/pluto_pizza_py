@@ -186,17 +186,14 @@ class ProductCustomizationsModel(Base):
         back_populates="product_customization"
     )
 
-    # TODO: Revisit proxying
-    # toppings_with_details: AssociationProxy[
-    #     list["ToppingModel"]
-    # ] = association_proxy(
-    #     "toppings",
-    #     "topping",
-    #     creator=lambda topping: ToppingModel(name="testing"),
-    # )
+    toppings: AssociationProxy[list["ToppingModel"]] = association_proxy(
+        "toppings_association", "topping"
+    )
 
-    toppings: Mapped[list["ProductCustomizationToppingsModel"]] = relationship(
-        back_populates="product_customization"
+    toppings_association: Mapped[
+        list["ProductCustomizationToppingsModel"]
+    ] = relationship(
+        back_populates="product_customization",
     )
     crust_type: Mapped[CrustTypeModel] = relationship(
         back_populates="product_customizations", lazy="joined"
@@ -231,11 +228,9 @@ class ProductCustomizationToppingsModel(Base):
         ForeignKey("product_customizations.id"), primary_key=True
     )
 
-    topping: Mapped["ToppingModel"] = relationship(
-        back_populates="product_customizations"
-    )
+    topping: Mapped["ToppingModel"] = relationship()
     product_customization: Mapped["ProductCustomizationsModel"] = relationship(
-        back_populates="toppings"
+        back_populates="toppings_association"
     )
 
 

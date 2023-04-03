@@ -1,23 +1,33 @@
 from pydantic import BaseModel
 from db.models import CartItemModel
-from schema.product_customization_schema import ProductCustomizationIn
+from schema.product_customization_schema import (
+    ProductCustomizationDefault,
+    ProductCustomizationIn,
+    ProductCustomizationOut,
+)
 
 
 class CartItem(BaseModel):
     # TODO: create ProductCustomization schema specific to carts
-    product_customization: ProductCustomizationIn
+    product_customization: ProductCustomizationDefault
 
     class Config:
         orm_mode = True
 
 
 class CartItemIn(CartItem):
+    product_customization: ProductCustomizationIn
+
+    class Config:
+        orm_mode = True
+
     pass
 
 
 class CartItemOut(BaseModel):
     id: int
     cart_id: int
+    product_customization: ProductCustomizationOut
 
     class Config:
         orm_mode = True

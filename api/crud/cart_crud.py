@@ -1,6 +1,9 @@
 from sqlalchemy import select, desc
 from sqlalchemy.orm import Session
-from db.models import CartItemModel, CartModel
+from db.models import (
+    CartItemModel,
+    CartModel,
+)
 
 
 def read_active_user_cart(db: Session, user_id):

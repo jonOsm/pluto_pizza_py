@@ -27,6 +27,7 @@ def show_active_user_cart(
 
 
 # TODO: Consideration - how will we handle anon users?
+# TODO: this is messy, may wish to use multiple requests on the FE instead
 @router.post("/item")
 def store_cart_item(
     cart_item: CartItemIn,
@@ -39,7 +40,7 @@ def store_cart_item(
         cart = create_cart(db, cart)
 
     cart_item_dict = cart_item.dict()
-    new_toppings = [
+    new_toppings_association = [
         ProductCustomizationToppingsModel(topping_id=raw_topping["id"])
         for raw_topping in cart_item_dict["product_customization"]["toppings"]
     ]
@@ -47,7 +48,7 @@ def store_cart_item(
     new_product_cust = ProductCustomizationsModel(
         **cart_item_dict["product_customization"]
     )
-    new_product_cust.toppings = new_toppings
+    new_product_cust.toppings_association = new_toppings_association
     cart_item_db = CartItemModel(
         product_customization=new_product_cust, cart_id=cart.id
     )

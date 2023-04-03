@@ -29,14 +29,7 @@ async def index(
 async def default_product_customization(
     product_id: int, db: Session = Depends(get_db)
 ) -> ProductCustomizationDefault:
-    prod_cust_record = read_default_product_customization(db, product_id)
-    toppings = [
-        topping_record.topping for topping_record in prod_cust_record.toppings
-    ]
-    del prod_cust_record.toppings
-    return ProductCustomizationDefault(
-        **prod_cust_record.__dict__, toppings=toppings
-    )
+    return read_default_product_customization(db, product_id)
 
 
 @router.get("/customization/options")

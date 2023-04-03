@@ -1,4 +1,7 @@
+from __future__ import annotations
+from typing import Any
 from pydantic import BaseModel
+from util.proxy import ProxyHackGetter
 from .toppings_schema import Topping, ToppingIn
 
 
@@ -38,14 +41,7 @@ class ProductSize(BaseProductCustomizationField):
     pass
 
 
-class ProductCustomizationEssential(BaseModel):
-    product_size: ProductSize
-
-
-# TODO: Create base class for ProductCustomization schemas
-class ProductCustomizationIntermediary(BaseModel):
-    id: int
-    is_default: bool
+class ProductCustomizationBase(BaseModel):
     product_size: ProductSize
     crust_type: CrustType
     crust_thickness: CrustThickness
@@ -58,20 +54,24 @@ class ProductCustomizationIntermediary(BaseModel):
         orm_mode = True
 
 
-class ProductCustomizationDefault(BaseModel):
+class ProductCustomizationDefault(ProductCustomizationBase):
     id: int
-    is_default: bool
     toppings: list[Topping]
-    product_size: ProductSize
-    crust_type: CrustType
-    crust_thickness: CrustThickness
-    cheese_type: CheeseType
-    cheese_amt: CheeseAmt
-    sauce_type: SauceType
-    sauce_amt: SauceAmt
+    is_default: bool
 
     class Config:
         orm_mode = True
+        getter_dict = ProxyHackGetter
+
+
+class ProductCustomizationOut(ProductCustomizationBase):
+    id: int
+    toppings: Any
+    is_default: bool
+
+    class Config:
+        orm_mode = True
+        getter_dict = ProxyHackGetter
 
 
 class ProductCustomizationIn(BaseModel):
