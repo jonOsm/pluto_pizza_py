@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from api.crud.cart_crud import (
     create_cart,
     create_cart_item,
+    delete_cart_item,
     read_active_user_cart,
 )
 from db.models import (
@@ -53,3 +54,16 @@ def store_cart_item(
         product_customization=new_product_cust, cart_id=cart.id
     )
     return create_cart_item(db, cart_item_db)
+
+
+@router.delete("/item/{id}")
+def remove_cart_item(
+    id: int,
+    user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    # get current user's cart
+    # check if item in cart
+    # if not, return error
+    # else delete item
+    return delete_cart_item(db, id)

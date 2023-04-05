@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any
 from pydantic import BaseModel
+from schema.products_schema import Product, ProductEssentials
 from util.proxy import ProxyHackGetter
 from .toppings_schema import Topping, ToppingIn
 
@@ -66,7 +67,8 @@ class ProductCustomizationDefault(ProductCustomizationBase):
 
 class ProductCustomizationOut(ProductCustomizationBase):
     id: int
-    toppings: Any
+    product: ProductEssentials
+    toppings: list[Topping]
     is_default: bool
 
     class Config:

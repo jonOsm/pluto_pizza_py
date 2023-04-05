@@ -26,3 +26,10 @@ def create_cart(db: Session, cart: CartModel):
     db.add(cart)
     db.commit()
     return cart
+
+
+def delete_cart_item(db: Session, cart_item_id: int):
+    cart_item = db.get(CartItemModel, cart_item_id)
+    db.delete(cart_item)
+    db.commit()
+    return None if cart_item is None else cart_item.id

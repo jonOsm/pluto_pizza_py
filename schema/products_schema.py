@@ -1,9 +1,5 @@
 from pydantic import BaseModel
 
-from schema.product_customization_schema import (
-    ProductSize,
-)
-
 
 class Product(BaseModel):
     id: int
@@ -19,7 +15,26 @@ class Product(BaseModel):
 
 
 class ProductWithEssentialCustomization(Product):
-    product_size: ProductSize
+    product_size: "ProductSize"
 
     class Config:
         orm_mode = True
+
+
+class ProductEssentials(BaseModel):
+    name: str
+    id: int
+    base_price: float
+    image_url: str
+
+    class Config:
+        orm_mode = True
+
+
+# down here to handle circular imports
+# TODO: look into better way to handle circular imports
+from schema.product_customization_schema import (
+    ProductSize,
+)
+
+ProductWithEssentialCustomization.update_forward_refs()
