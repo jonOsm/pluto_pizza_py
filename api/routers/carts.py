@@ -14,16 +14,16 @@ from db.models import (
     ProductCustomizationToppingsModel,
 )
 from db.setup import get_db
-from schema.cart_schema import Cart, CartItemIn, CartItemOut
+from schema.cart_schema import Cart, CartItemIn, CartItemOut, CartOut
 from schema.users_schema import User
 
-router = APIRouter(prefix="/cart", tags=["cart"])
+router = APIRouter(prefix="/carts", tags=["cart"])
 
 
-@router.get("/")
+@router.get("/active")
 def show_active_user_cart(
     user: User = Depends(get_current_active_user), db: Session = Depends(get_db)
-) -> Cart | None:
+) -> CartOut | None:
     return read_active_user_cart(db, user.id)
 
 

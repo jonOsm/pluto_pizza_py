@@ -35,9 +35,16 @@ class CartItemOut(BaseModel):
 
 class Cart(BaseModel):
     id: int
-    user_id: int | None
     is_active: bool
     cart_items: list[CartItem]
+
+    class Config:
+        orm_mode = True
+
+
+class CartOut(BaseModel):
+    is_active: bool
+    cart_items: list[CartItemOut]
 
     class Config:
         orm_mode = True
