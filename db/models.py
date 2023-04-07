@@ -168,6 +168,10 @@ class ProductCustomizationsModel(Base):
         ForeignKey("products.id", ondelete="CASCADE")
     )
 
+    cart_item_id: Mapped[int | None] = mapped_column(
+        ForeignKey("cart_items.id", ondelete="CASCADE")
+    )
+
     crust_type_id: Mapped[int] = mapped_column(ForeignKey("crust_types.id"))
     crust_thickness_id: Mapped[int] = mapped_column(
         ForeignKey("crust_thicknesses.id")
@@ -238,11 +242,10 @@ class CartItemModel(Base):
     __tablename__ = "cart_items"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    product_customization_id: Mapped[int] = mapped_column(
-        ForeignKey("product_customizations.id")
+    cart_id: Mapped[id] = mapped_column(
+        ForeignKey("carts.id", ondelete="CASCADE")
     )
-    cart_id: Mapped[id] = mapped_column(ForeignKey("carts.id"))
-    product_customization: Mapped[ProductCustomizationsModel] = relationship(
+    product_customization: Mapped["ProductCustomizationsModel"] = relationship(
         back_populates="cart_item"
     )
     cart: Mapped["CartModel"] = relationship(back_populates="cart_items")
@@ -253,7 +256,9 @@ class CartModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     # anon users can still create a cart - how do we identify? cookie?
-    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
+    user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE")
+    )
     anon_token: Mapped[str | None]
 
     cart_items: Mapped[list[CartItemModel]] = relationship(

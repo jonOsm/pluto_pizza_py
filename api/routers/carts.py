@@ -37,8 +37,7 @@ def store_cart_item(
 ) -> CartItemOut:
     cart = read_active_user_cart(db, user.id)
     if not cart:
-        cart = CartModel(user_id=user.id, is_active=True)
-        cart = create_cart(db, cart)
+        cart = create_cart(db, CartModel(user_id=user.id, is_active=True))
 
     cart_item_dict = cart_item.dict()
     new_toppings_association = [
